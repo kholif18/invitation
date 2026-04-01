@@ -2,20 +2,6 @@
 
 @section('title', 'Dashboard')
 
-@section('breadcrumb')
-<li class="breadcrumb-item text-muted">
-    <a href="{{ route('admin.dashboard') }}" class="text-muted text-hover-primary">
-        Dashboard
-    </a>
-</li>
-
-<li class="breadcrumb-item">
-    <span class="bullet bg-gray-200 w-5px h-2px"></span>
-</li>
-
-<li class="breadcrumb-item text-dark">List</li>
-@endsection
-
 @section('content')
 <div class="container-fluid">
     <!-- Welcome Card -->
