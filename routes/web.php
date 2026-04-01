@@ -4,11 +4,12 @@ use App\Http\Controllers\Admin\CommunicationController;
 use App\Http\Controllers\Admin\EmailCampaignController;
 use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\MessageTemplateController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WhatsAppController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\InvitationController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RSVPController;
 use Illuminate\Support\Facades\Route;
 
@@ -99,9 +100,19 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::resource('guests', GuestController::class);
     // Route::get('invitations/{invitation}/guests', [GuestController::class, 'indexByInvitation'])->name('guests.byInvitation');
     
+    // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+    Route::post('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.settings.update');
+    Route::get('/profile/activity', [ProfileController::class, 'activityLog'])->name('profile.activity');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::resource('users', UserController::class);
+    Route::post('users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulk-delete');
+    Route::get('users/export', [UserController::class, 'export'])->name('users.export');
+    Route::post('users/{id}/change-password', [UserController::class, 'changePassword'])->name('users.change-password');
 });
 
 require __DIR__.'/auth.php';

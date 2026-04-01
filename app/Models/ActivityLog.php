@@ -29,4 +29,17 @@ class ActivityLog extends Model
     {
         return $this->created_at->format('d M Y, H:i');
     }
+
+    public function getActionBadgeAttribute()
+    {
+        $badges = [
+            'create' => 'success',
+            'update' => 'info',
+            'delete' => 'danger',
+            'password_change' => 'warning',
+            'bulk_delete' => 'danger',
+        ];
+        
+        return $badges[$this->action] ?? 'secondary';
+    }
 }
