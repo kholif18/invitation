@@ -18,7 +18,7 @@
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end gap-3">
-                <a href="{{ route('invitations.templates') }}" class="btn btn-primary">
+                <a href="{{ route('admin.invitations.templates') }}" class="btn btn-primary">
                     <i class="bi bi-plus fs-2"></i>
                     Create Wedding Invitation
                 </a>
@@ -43,17 +43,7 @@
                 <option value="pending">Pending</option>
                 <option value="cancelled">Cancelled</option>
             </select>
-            
-            <select class="form-select w-150px" id="templateFilter">
-                <option value="">All Templates</option>
-                <option value="elegant">Elegant Classic</option>
-                <option value="modern">Modern Minimalist</option>
-                <option value="floral">Floral Romance</option>
-                <option value="premium">Premium Gold</option>
-            </select>
-            
-            <input type="date" class="form-control w-150px" id="dateFilter" placeholder="Event Date">
-            
+
             <button class="btn btn-light-primary" id="resetFilter">
                 <i class="bi bi-arrows-circle"></i>
                 Reset

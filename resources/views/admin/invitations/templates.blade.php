@@ -8,7 +8,7 @@
     <span class="bullet bg-gray-200 w-5px h-2px"></span>
 </li>
 <li class="breadcrumb-item text-muted">
-    <a href="{{ route('invitations.index') }}" class="text-muted text-hover-primary">
+    <a href="{{ route('admin.invitations.index') }}" class="text-muted text-hover-primary">
         Wedding Invitations
     </a>
 </li>
@@ -33,7 +33,7 @@
                     <i class="bi bi-cloud-upload"></i>
                     Upload Custom Template
                 </button>
-                <a href="{{ route('invitations.index') }}" class="btn btn-light">
+                <a href="{{ route('admin.invitations.index') }}" class="btn btn-light">
                     <i class="bi bi-arrow-left"></i>
                     Back
                 </a>
@@ -205,7 +205,7 @@
                     id: 1,
                     name: 'Elegant Classic',
                     type: 'wedding',
-                    preview_image: "{{ asset('admin/assets/media/templates/wedding1.png') }}",
+                    preview_image: '/assets/images/templates/elegant-classic.jpg',
                     description: 'Traditional and formal design with elegant floral accents and timeless beauty.',
                     features: ['RSVP & Gift features', 'Floral design', 'Timeless elegance'],
                     is_default: true
@@ -320,7 +320,7 @@
                                         <i class="bi bi-eye"></i>
                                         Preview
                                     </button>
-                                    <a href="{{ route('invitations.create') }}?template=${encodeURIComponent(template.name)}" class="btn btn-${color} w-50">
+                                    <a href="{{ route('admin.invitations.create') }}?template=${encodeURIComponent(template.name)}" class="btn btn-${color} w-50">
                                         <i class="bi bi-pencil"></i>
                                         Use Template
                                     </a>
@@ -377,7 +377,7 @@
             }
             
             const useBtn = document.getElementById('useTemplateBtn');
-            useBtn.href = "{{ route('invitations.create') }}?template=" + encodeURIComponent(template.name);
+            useBtn.href = "{{ route('admin.invitations.create') }}?template=" + encodeURIComponent(template.name);
             
             const modal = new bootstrap.Modal(document.getElementById('previewModal'));
             modal.show();

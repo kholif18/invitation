@@ -8,7 +8,7 @@
     <span class="bullet bg-gray-200 w-5px h-2px"></span>
 </li>
 <li class="breadcrumb-item text-muted">
-    <a href="{{ route('invitations.index') }}" class="text-muted text-hover-primary">
+    <a href="{{ route('admin.invitations.index') }}" class="text-muted text-hover-primary">
         All Invitations
     </a>
 </li>
@@ -359,7 +359,7 @@
     
     <!-- Action Buttons -->
     <div class="d-flex justify-content-end gap-3 mt-6">
-        <a href="{{ route('invitations.index') }}" class="btn btn-light">
+        <a href="{{ route('admin.invitations.index') }}" class="btn btn-light">
             Cancel
         </a>
         <button type="button" class="btn btn-secondary" id="saveDraftBtn">
@@ -778,7 +778,7 @@
                     text: 'Your wedding invitation has been sent successfully.',
                     timer: 2000
                 }).then(() => {
-                    window.location.href = "{{ route('invitations.index') }}";
+                    window.location.href = "{{ route('admin.invitations.index') }}";
                 });
             }
         });

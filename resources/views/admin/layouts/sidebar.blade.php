@@ -56,7 +56,7 @@
                 </div>
                 
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('invitations.index') ? 'active' : '' }}" href="{{ route('invitations.index') }}">
+                    <a class="menu-link {{ request()->routeIs('admin.invitations.index') ? 'active' : '' }}" href="{{ route('admin.invitations.index') }}">
                         <span class="menu-icon">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -70,7 +70,7 @@
                 </div>
                 
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('invitations.create') ? 'active' : '' }}" href="{{ route('invitations.create') }}">
+                    <a class="menu-link {{ request()->routeIs('admin.invitations.create') ? 'active' : '' }}" href="{{ route('admin.invitations.create') }}">
                         <span class="menu-icon">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -84,7 +84,7 @@
                 </div>
                 
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('invitations.templates') ? 'active' : '' }}" href="{{ route('invitations.templates') }}">
+                    <a class="menu-link {{ request()->routeIs('admin.invitations.templates') ? 'active' : '' }}" href="{{ route('admin.invitations.templates') }}">
                         <span class="menu-icon">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
@@ -97,15 +97,8 @@
                     </a>
                 </div>
 
-                <!-- RSVP Section -->
-                <div class="menu-item pt-2">
-                    <div class="menu-content pt-2 pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">RSVP</span>
-                    </div>
-                </div>
-                
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('rsvp.index') ? 'active' : '' }}" href="#">
+                    <a class="menu-link {{ request()->routeIs('admin.rsvp.index') ? 'active' : '' }}" href="{{ route('admin.rsvp.index') }}">
                         <span class="menu-icon">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -124,102 +117,24 @@
                         @endif --}}
                     </a>
                 </div>
-                
+
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('rsvp.statistics') ? 'active' : '' }}" href="#">
+                    <a class="menu-link {{ request()->routeIs('admin.invitations.links') ? 'active' : '' }}" 
+                    href="{{ route('admin.invitations.links') }}">
                         <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M3 13H8V21H3V13ZM10 8H15V21H10V8ZM17 3H22V21H17V3Z" fill="black" />
-                                    <path d="M21 22H3C2.4 22 2 21.6 2 21V3C2 2.4 2.4 2 3 2H21C21.6 2 22 2.4 22 3V21C22 21.6 21.6 22 21 22Z" fill="black" />
-                                </svg>
-                            </span>
+                            <i class="bi bi-link-45deg fs-2"></i>
                         </span>
-                        <span class="menu-title">RSVP Statistics</span>
+                        <span class="menu-title">Invitation Links</span>
                     </a>
                 </div>
 
-                <!-- Events Section -->
-                <div class="menu-item pt-2">
-                    <div class="menu-content pt-2 pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Events</span>
-                    </div>
-                </div>
-                
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('events.index') ? 'active' : '' }}" href="#">
+                    <a class="menu-link {{ request()->routeIs('admin.invitations.statistics') ? 'active' : '' }}" 
+                    href="{{ route('admin.invitations.statistics') }}">
                         <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M19 4H5C3.9 4 3 4.9 3 6V18C3 19.1 3.9 20 5 20H19C20.1 20 21 19.1 21 18V6C21 4.9 20.1 4 19 4Z" fill="black" />
-                                    <path d="M8 2H6C5.4 2 5 2.4 5 3V5H7V3H8V2ZM18 2H16V3H17V5H19V3C19 2.4 18.6 2 18 2ZM12 12C10.9 12 10 11.1 10 10C10 8.9 10.9 8 12 8C13.1 8 14 8.9 14 10C14 11.1 13.1 12 12 12ZM16 16H8V15C8 13.9 8.9 13 10 13H14C15.1 13 16 13.9 16 15V16Z" fill="black" />
-                                </svg>
-                            </span>
+                            <i class="bi bi-graph-up fs-2"></i>
                         </span>
-                        <span class="menu-title">Manage Events</span>
-                    </a>
-                </div>
-                
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('events.upcoming') ? 'active' : '' }}" href="#">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M19 4H5C3.9 4 3 4.9 3 6V18C3 19.1 3.9 20 5 20H19C20.1 20 21 19.1 21 18V6C21 4.9 20.1 4 19 4Z" fill="black" />
-                                    <path d="M7 10H9V12H7V10ZM11 10H13V12H11V10ZM15 10H17V12H15V10ZM7 14H9V16H7V14ZM11 14H13V16H11V14ZM15 14H17V16H15V14Z" fill="black" />
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Upcoming Events</span>
-                    </a>
-                </div>
-
-                <!-- Communications Section -->
-                <div class="menu-item pt-2">
-                    <div class="menu-content pt-2 pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Communications</span>
-                    </div>
-                </div>
-                
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('communications.email') ? 'active' : '' }}" href="#">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M22 5H2C1.4 5 1 5.4 1 6V18C1 18.6 1.4 19 2 19H22C22.6 19 23 18.6 23 18V6C23 5.4 22.6 5 22 5Z" fill="black" />
-                                    <path d="M12 13.5L3 8.5V18H21V8.5L12 13.5Z" fill="black" />
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Email Campaigns</span>
-                    </a>
-                </div>
-                
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('communications.sms') ? 'active' : '' }}" href="#">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M22 2H2C1.4 2 1 2.4 1 3V17C1 17.6 1.4 18 2 18H22C22.6 18 23 17.6 23 17V3C23 2.4 22.6 2 22 2Z" fill="black" />
-                                    <path d="M12 12L3 7V5L12 10L21 5V7L12 12Z" fill="black" />
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">SMS Notifications</span>
-                    </a>
-                </div>
-                
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('communications.templates') ? 'active' : '' }}" href="#">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M5 3H19C20.1 3 21 3.9 21 5V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3Z" fill="black" />
-                                    <path d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H14V17H7V15Z" fill="black" />
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Message Templates</span>
+                        <span class="menu-title">Link Statistics</span>
                     </a>
                 </div>
 
@@ -304,7 +219,7 @@
 
                 <div class="menu-item">
                     <a class="menu-link {{ request()->routeIs('profile.*') ? 'active' : '' }}"
-                        href="{{ route('profile.edit') }}">
+                        href="{{ route('admin.profile.edit') }}">
                         <span class="menu-icon">
                             <!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
                             <span class="svg-icon svg-icon-2">
