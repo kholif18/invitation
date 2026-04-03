@@ -203,21 +203,10 @@
     document.getElementById('statusFilter').addEventListener('change', function() {
         filterTable();
     });
-    
-    // Filter by template
-    document.getElementById('templateFilter').addEventListener('change', function() {
-        filterTable();
-    });
-    
-    // Filter by date
-    document.getElementById('dateFilter').addEventListener('change', function() {
-        filterTable();
-    });
+
     
     function filterTable() {
         let status = document.getElementById('statusFilter').value.toLowerCase();
-        let template = document.getElementById('templateFilter').value.toLowerCase();
-        let date = document.getElementById('dateFilter').value;
         let rows = document.querySelectorAll('#invitationsTableBody tr');
         
         rows.forEach(row => {
@@ -237,8 +226,6 @@
     document.getElementById('resetFilter').addEventListener('click', function() {
         document.getElementById('searchInput').value = '';
         document.getElementById('statusFilter').value = '';
-        document.getElementById('templateFilter').value = '';
-        document.getElementById('dateFilter').value = '';
         let rows = document.querySelectorAll('#invitationsTableBody tr');
         rows.forEach(row => row.style.display = '');
     });

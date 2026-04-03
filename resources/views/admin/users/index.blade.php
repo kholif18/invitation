@@ -45,11 +45,6 @@
                 <i class="bi bi-arrows-circle"></i>
                 Reset
             </button>
-            
-            <button class="btn btn-light-success" onclick="exportUsers()">
-                <i class="bi bi-download"></i>
-                Export
-            </button>
         </div>
 
         <!-- Users Table -->
@@ -136,7 +131,7 @@
                                     <i class="bi bi-pencil fs-2"></i>
                                 </a>
                                 
-                                <button onclick="changePassword({{ $user->id }}, '{{ $user->name }}')"
+                                <button onclick='changePassword({{ $user->id }}, @json($user->name))'
                                         class="btn btn-sm btn-icon btn-light-warning" 
                                         data-bs-toggle="tooltip" 
                                         title="Change Password">
@@ -144,7 +139,7 @@
                                 </button>
                                 
                                 @if(auth()->id() != $user->id)
-                                <button onclick="deleteUser({{ $user->id }}, '{{ $user->name }}')"
+                                <button onclick='deleteUser({{ $user->id }}, @json($user->name))'
                                         class="btn btn-sm btn-icon btn-light-danger" 
                                         data-bs-toggle="tooltip" 
                                         title="Delete">
@@ -227,6 +222,7 @@
                     <div class="mb-4">
                         <label class="required fw-bold mb-2">Confirm Password</label>
                         <input type="password" class="form-control" id="confirmPassword" name="password_confirmation" required>
+                        <div id="passwordMatch" class="mt-2"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -333,6 +329,8 @@
         document.getElementById('newPassword').value = '';
         document.getElementById('confirmPassword').value = '';
         
+        matchDiv.innerHTML = '<span class="text-muted">Password will remain unchanged</span>';
+        
         const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
         modal.show();
     }
@@ -344,13 +342,8 @@
         const password = document.getElementById('newPassword').value;
         const confirm = document.getElementById('confirmPassword').value;
         
-        if(password !== confirm) {
-            Swal.fire('Error', 'Passwords do not match', 'error');
-            return;
-        }
-        
-        if(password.length < 8) {
-            Swal.fire('Error', 'Password must be at least 8 characters', 'error');
+        if (!validatePassword()) {
+            Swal.fire('Error', 'Please fix password validation', 'error');
             return;
         }
         
@@ -410,17 +403,43 @@
         });
     }
 
-    // Export users
-    function exportUsers() {
-        const status = document.getElementById('statusFilter').value;
-        let url = '{{ route("admin.users.export") }}';
-        
-        if(status) {
-            url += '?status=' + status;
+    // Password validation
+    const newPassword = document.getElementById('newPassword');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const matchDiv = document.getElementById('passwordMatch');
+
+    function validatePassword() {
+        const newPass = newPassword.value;
+        const confirm = confirmPassword.value;
+
+        if (newPass.length === 0 && confirm.length === 0) {
+            matchDiv.innerHTML = '<span class="text-muted">Password will remain unchanged</span>';
+            return true;
         }
-        
-        window.location.href = url;
+
+        if (newPass.length > 0 && newPass.length < 8) {
+            matchDiv.innerHTML = '<span class="text-danger">Password must be at least 8 characters</span>';
+            return false;
+        }
+
+        if (newPass !== confirm) {
+            matchDiv.innerHTML = '<span class="text-danger">Passwords do not match</span>';
+            return false;
+        }
+
+        if (newPass.length > 0 && confirm.length > 0) {
+            matchDiv.innerHTML = '<span class="text-success">Passwords match</span>';
+            return true;
+        }
+
+        matchDiv.innerHTML = '';
+        return false;
     }
+
+    // realtime validation
+    newPassword.addEventListener('keyup', validatePassword);
+    confirmPassword.addEventListener('keyup', validatePassword);
+
 </script>
 @endpush
 @endsection

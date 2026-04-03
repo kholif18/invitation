@@ -288,76 +288,43 @@
         </div>
         
         <!-- Sidebar Column -->
-        <div class="col-xl-4">
-            <!-- Guest Management -->
+        <div class="col-xl-4">  
+            <!-- Song edit -->
             <div class="card mb-6">
                 <div class="card-header">
-                    <h3 class="card-title">Guest Management</h3>
+                    <h3 class="card-title"><i class="bi bi-music-note-beamed"></i>Song Theme</h3>
                 </div>
                 <div class="card-body">
                     <div class="mb-4">
-                        <label class="fw-bold mb-2">Add Guests</label>
-                        <div class="d-flex gap-2 mb-3">
-                            <input type="email" class="form-control" placeholder="guest@email.com" id="guestEmail">
-                            <button type="button" class="btn btn-primary" id="addGuestBtn">
-                                <i class="bi bi-plus"></i>
-                                Add
-                            </button>
-                        </div>
-                        <div class="border rounded p-3 min-h-150px">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold">Guest List</span>
-                                <span class="badge badge-light-primary" id="guestCount">0 guests</span>
-                            </div>
-                            <div id="guestList">
-                                <div class="text-center text-muted py-4">
-                                    <i class="bi bi-users fs-2x mb-2"></i>
-                                    <p>No guests added yet</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="separator my-5"></div>
-                    
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-light-primary w-50">
-                            <i class="bi bi-file-up"></i>
-                            Import CSV
-                        </button>
-                        <button type="button" class="btn btn-light-primary w-50">
-                            <i class="bi bi-download"></i>
-                            Export Template
-                        </button>
+                        <label class="form-check-label" for="song_theme">
+                            Upload Song Theme (MP3)
+                        </label>
+                        <input class="form-control mt-2" type="file" id="song_theme" name="song_theme" accept="audio/*">
                     </div>
                 </div>
             </div>
-            
-            <!-- Settings -->
+
             <div class="card mb-6">
                 <div class="card-header">
-                    <h3 class="card-title">Settings</h3>
+                    <h3 class="card-title">Fitur Undangan</h3>
                 </div>
                 <div class="card-body">
-                    <div class="form-check form-switch form-check-custom form-check-solid mb-4">
-                        <input class="form-check-input" type="checkbox" id="sendEmail" checked>
-                        <label class="form-check-label" for="sendEmail">
-                            Send invitation via email
+
+                    <div class="form-check form-switch mb-4">
+                        <input class="form-check-input" type="checkbox" name="is_wish_active" value="1" checked>
+                        <label class="form-check-label">
+                            Aktifkan Ucapan & RSVP
                         </label>
                     </div>
-                    
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" id="sendWhatsapp">
-                        <label class="form-check-label" for="sendWhatsapp">
-                            Send invitation via WhatsApp
-                        </label>
-                    </div>
+
                 </div>
             </div>
+
         </div>
     </div>
     
     <!-- Action Buttons -->
+    <input type="hidden" name="status" id="statusInput" value="draft">
     <div class="d-flex justify-content-end gap-3 mt-6">
         <a href="{{ route('admin.invitations.index') }}" class="btn btn-light">
             Cancel
@@ -375,7 +342,6 @@
 
 @push('scripts')
 <script>
-    let guests = [];
     let receptionCounter = 1;
     let mapCounter = 1;
     let bankAccountCounter = 1;
@@ -633,57 +599,6 @@
         }
     });
     
-    // Add Guest
-    document.getElementById('addGuestBtn').addEventListener('click', function() {
-        let email = document.getElementById('guestEmail').value;
-        if(email && email.includes('@')) {
-            guests.push(email);
-            updateGuestList();
-            document.getElementById('guestEmail').value = '';
-        } else {
-            Swal.fire('Error', 'Please enter a valid email address', 'error');
-        }
-    });
-    
-    function updateGuestList() {
-        let guestListDiv = document.getElementById('guestList');
-        let guestCount = document.getElementById('guestCount');
-        
-        if(guests.length === 0) {
-            guestListDiv.innerHTML = `
-                <div class="text-center text-muted py-4">
-                    <i class="bi bi-users fs-2x mb-2"></i>
-                    <p>No guests added yet</p>
-                </div>
-            `;
-            guestCount.textContent = '0 guests';
-            return;
-        }
-        
-        let html = '<div class="list-group list-group-flush">';
-        guests.forEach((guest, index) => {
-            html += `
-                <div class="d-flex justify-content-between align-items-center py-2">
-                    <div>
-                        <i class="bi bi-profile-circle fs-3 text-primary me-2"></i>
-                        <span>${guest}</span>
-                    </div>
-                    <button class="btn btn-sm btn-icon btn-light-danger" onclick="removeGuest(${index})">
-                        <i class="bi bi-cross fs-2"></i>
-                    </button>
-                </div>
-            `;
-        });
-        html += '</div>';
-        guestListDiv.innerHTML = html;
-        guestCount.textContent = guests.length + ' guest' + (guests.length !== 1 ? 's' : '');
-    }
-    
-    window.removeGuest = function(index) {
-        guests.splice(index, 1);
-        updateGuestList();
-    };
-    
     // Form validation before submit
     function validateWeddingForm() {
         const requiredFields = [
@@ -790,6 +705,17 @@
         if(document.getElementById('sendWhatsapp').checked) methods.push('WhatsApp');
         return methods.join(' and ');
     }
+
+    document.getElementById('saveDraftBtn').onclick = function() {
+        document.getElementById('statusInput').value = 'draft';
+        document.getElementById('invitationForm').submit();
+    }
+
+    document.getElementById('sendInvitationBtn').onclick = function() {
+        document.getElementById('statusInput').value = 'published';
+        document.getElementById('invitationForm').submit();
+    }
+
 </script>
 @endpush
 @endsection

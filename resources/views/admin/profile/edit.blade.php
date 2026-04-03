@@ -51,10 +51,6 @@
                     <span>Member Since</span>
                     <span class="fw-bold">{{ auth()->user()->created_at->format('d M Y') }}</span>
                 </div>
-                <div class="d-flex justify-content-between">
-                    <span>Timezone</span>
-                    <span class="fw-bold">{{ auth()->user()->timezone }}</span>
-                </div>
             </div>
         </div>
     </div>

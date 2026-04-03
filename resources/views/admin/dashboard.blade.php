@@ -124,7 +124,7 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-3">
-                        <a href="#" class="btn btn-primary btn-lg">
+                        <a href="{{ route('admin.invitations.templates') }}" class="btn btn-primary btn-lg">
                             <i class="fas fa-plus-circle me-2"></i> Create New Invitation
                         </a>
                         <a href="#" class="btn btn-info btn-lg">
@@ -191,7 +191,7 @@
                     </div>
                     {{-- @if(isset($recentInvitations) && $recentInvitations->count() > 0) --}}
                     <div class="text-center mt-3">
-                        <a href="#" class="btn btn-link">View All Invitations →</a>
+                        <a href="{{ route('admin.invitations.index') }}" class="btn btn-link">View All Invitations →</a>
                     </div>
                     {{-- @endif --}}
                 </div>

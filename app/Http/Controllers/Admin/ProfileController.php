@@ -69,17 +69,28 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        // Delete old avatar
-        if ($user->avatar) {
-            Storage::delete('public/avatars/' . $user->avatar);
-        }
+        if ($request->hasFile('avatar')) {
+            $avatar = $request->file('avatar');
 
-        // Upload new avatar
-        $avatar = $request->file('avatar');
-        $filename = time() . '_' . $avatar->getClientOriginalName();
-        $avatar->storeAs('public/avatars', $filename);
-        
-        $user->update(['avatar' => $filename]);
+            if ($avatar->isValid()) {
+
+                // Hapus avatar lama (lebih aman pakai disk public)
+                if ($user->avatar && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
+                    Storage::disk('public')->delete('avatars/' . $user->avatar);
+                }
+
+                // Generate filename
+                $filename = time() . '_' . $avatar->getClientOriginalName();
+
+                // Simpan ke storage/app/public/avatars
+                Storage::disk('public')->putFileAs('avatars', $avatar, $filename);
+
+                // Update user
+                $user->update([
+                    'avatar' => $filename
+                ]);
+            }
+        }
 
         // Record activity
         $user->recordActivity('update', 'profile', 'Updated profile photo');
@@ -90,6 +101,7 @@ class ProfileController extends Controller
             'avatar_url' => $user->avatar_url
         ]);
     }
+
 
     /**
      * Update user's password.
@@ -123,39 +135,6 @@ class ProfileController extends Controller
         }
 
         return redirect()->route('admin.profile.edit')->with('success', 'Password updated successfully.');
-    }
-
-    /**
-     * Update user's settings
-     */
-    public function updateSettings(Request $request)
-    {
-        $request->validate([
-            'timezone' => 'required|string|timezone',
-            'notifications' => 'boolean',
-        ]);
-
-        $user = $request->user();
-        
-        $settings = $user->settings ?? [];
-        $settings['notifications'] = $request->notifications ?? false;
-        
-        $user->update([
-            'timezone' => $request->timezone,
-            'settings' => $settings,
-        ]);
-
-        // Record activity
-        $user->recordActivity('update', 'profile', 'Updated settings');
-
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Settings updated successfully'
-            ]);
-        }
-
-        return redirect()->route('admin.profile.edit')->with('success', 'Settings updated successfully.');
     }
 
     /**

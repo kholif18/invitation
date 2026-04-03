@@ -1,9 +1,14 @@
 <div id="kt_aside" class="aside aside-dark aside-hoverable" data-kt-drawer="true" data-kt-drawer-name="aside" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'200px', '300px': '250px'}" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_aside_mobile_toggle">
     <!--begin::Brand-->
     <div class="aside-logo flex-column-auto" id="kt_aside_logo">
+        @php
+            $sidebarLogo = setting('site_logo');
+            $siteName = setting('site_name');
+        @endphp
         <!--begin::Logo-->
         <a href="{{ route('admin.dashboard') }}">
-            <img alt="Logo" src="{{ asset('admin/assets/media/logos/logo-1-dark.svg') }}" class="h-25px logo" />
+            <img alt="Logo" src="{{ $sidebarLogo ? asset('storage/' . $sidebarLogo) : asset('admin/assets/media/logos/logo.svg') }}" class="h-25px logo" />
+            <span class="fw-bold text-white ">{{ $siteName ?? 'Ravaa Invitation' }}</span>
         </a>
         <!--end::Logo-->
         <!--begin::Aside toggler-->
@@ -32,7 +37,7 @@
                     </div>
                 </div>
                 <div class="menu-item">
-                    <a class="menu-link active" href="{{ route('admin.dashboard') }}">
+                    <a class="menu-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
                         <span class="menu-icon">
                             <!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
                             <span class="svg-icon svg-icon-2">
@@ -128,55 +133,9 @@
                     </a>
                 </div>
 
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.invitations.statistics') ? 'active' : '' }}" 
-                    href="{{ route('admin.invitations.statistics') }}">
-                        <span class="menu-icon">
-                            <i class="bi bi-graph-up fs-2"></i>
-                        </span>
-                        <span class="menu-title">Link Statistics</span>
-                    </a>
-                </div>
-
-                <!-- Settings Section -->
+                <!-- Admin Section -->
                 <div class="menu-item pt-2">
                     <div class="menu-content pt-2 pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Settings</span>
-                    </div>
-                </div>
-                
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('settings.general') ? 'active' : '' }}" href="#">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill="black" />
-                                    <path d="M19.4 15.1L18.8 13.9C18.9 13.3 19 12.7 19 12C19 11.3 18.9 10.7 18.8 10.1L19.4 8.9C19.7 8.3 19.5 7.6 18.9 7.3L16.7 6.1C16.1 5.8 15.4 6 15.1 6.6L14.5 7.8C13.9 7.4 13.2 7.1 12.5 7L12.1 5.7C11.9 5 11.2 4.6 10.5 4.8L8.3 5.4C7.6 5.6 7.2 6.3 7.4 7L7.8 8.3C7.1 8.7 6.5 9.2 6 9.7L4.8 9.1C4.2 8.8 3.5 9 3.2 9.6L2 11.8C1.7 12.4 1.9 13.1 2.5 13.4L3.7 14C3.6 14.6 3.5 15.2 3.5 16C3.5 16.8 3.6 17.4 3.7 18L2.5 18.6C1.9 18.9 1.7 19.6 2 20.2L3.2 22.4C3.5 23 4.2 23.2 4.8 22.9L6 22.3C6.6 22.7 7.3 23.1 8 23.3L8.4 24.5C8.6 25.2 9.3 25.6 10 25.4L12.2 24.8C12.9 24.6 13.3 23.9 13.1 23.2L12.7 21.9C13.4 21.6 14.1 21.2 14.7 20.7L15.9 21.3C16.5 21.6 17.2 21.4 17.5 20.8L18.7 18.6C19 18 18.8 17.3 18.2 17L16.9 16.4C17.3 15.8 17.7 15.1 18 14.4L19.4 15.1Z" fill="black" />
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">General Settings</span>
-                    </a>
-                </div>
-                
-                <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('settings.notifications') ? 'active' : '' }}" href="#">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.9 16.4 5.3 13.5 4.7C13.2 3.2 11.9 2 10.3 2C8.7 2 7.4 3.2 7.1 4.7C4.2 5.3 2.6 7.9 2.6 11V16L0.6 18H23.4L21.4 16H18Z" fill="black" />
-                                    <path d="M18 16V11C18 7.9 16.4 5.3 13.5 4.7C13.2 3.2 11.9 2 10.3 2C8.7 2 7.4 3.2 7.1 4.7C4.2 5.3 2.6 7.9 2.6 11V16L0.6 18H23.4L21.4 16H18Z" fill="black" />
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Notification Settings</span>
-                    </a>
-                </div>
-                
-                {{-- @if(auth()->user()->isAdmin()) --}}
-                <!-- Admin Section -->
-                <div class="menu-item pt-5">
-                    <div class="menu-content pt-8 pb-2">
                         <span class="menu-section text-muted text-uppercase fs-8 ls-1">Administration</span>
                     </div>
                 </div>
@@ -211,47 +170,20 @@
                         <span class="menu-title">My Profile</span>
                     </a>
                 </div>
-                
+ 
+                <!-- Settings Section -->
                 <div class="menu-item">
-                    <a class="menu-link {{ request()->routeIs('admin.system') ? 'active' : '' }}" href="#">
+                    <a class="menu-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" 
+                        href="{{ route('admin.settings.edit') }}">
                         <span class="menu-icon">
                             <span class="svg-icon svg-icon-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" fill="black" />
-                                    <path d="M12 8C10.3 8 9 9.3 9 11C9 12.7 10.3 14 12 14C13.7 14 15 12.7 15 11C15 9.3 13.7 8 12 8ZM12 12C11.4 12 11 11.6 11 11C11 10.4 11.4 10 12 10C12.6 10 13 10.4 13 11C13 11.6 12.6 12 12 12Z" fill="black" />
+                                    <path d="M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z" fill="black" />
+                                    <path opacity="0.3" d="M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z" fill="black" />
                                 </svg>
                             </span>
                         </span>
-                        <span class="menu-title">System Status</span>
-                    </a>
-                </div>
-                {{-- @endif --}}
-
-                <!-- Account -->
-                <div class="menu-item pt-5">
-                    <div class="menu-content pb-2">
-                        <span class="menu-section text-muted text-uppercase fs-8 ls-1">Account</span>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <div class="menu-content">
-                        <div class="separator mx-1 my-4"></div>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <a class="menu-link" href="#">
-                        <span class="menu-icon">
-                            <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
-                            <span class="svg-icon svg-icon-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M16.95 18.9688C16.75 18.9688 16.55 18.8688 16.35 18.7688C15.85 18.4688 15.75 17.8688 16.05 17.3688L19.65 11.9688L16.05 6.56876C15.75 6.06876 15.85 5.46873 16.35 5.16873C16.85 4.86873 17.45 4.96878 17.75 5.46878L21.75 11.4688C21.95 11.7688 21.95 12.2688 21.75 12.5688L17.75 18.5688C17.55 18.7688 17.25 18.9688 16.95 18.9688ZM7.55001 18.7688C8.05001 18.4688 8.15 17.8688 7.85 17.3688L4.25001 11.9688L7.85 6.56876C8.15 6.06876 8.05001 5.46873 7.55001 5.16873C7.05001 4.86873 6.45 4.96878 6.15 5.46878L2.15 11.4688C1.95 11.7688 1.95 12.2688 2.15 12.5688L6.15 18.5688C6.35 18.8688 6.65 18.9688 6.95 18.9688C7.15 18.9688 7.35001 18.8688 7.55001 18.7688Z" fill="black" />
-                                    <path opacity="0.3" d="M10.45 18.9687C10.35 18.9687 10.25 18.9687 10.25 18.9687C9.75 18.8687 9.35 18.2688 9.55 17.7688L12.55 5.76878C12.65 5.26878 13.25 4.8687 13.75 5.0687C14.25 5.1687 14.65 5.76878 14.45 6.26878L11.45 18.2688C11.35 18.6688 10.85 18.9687 10.45 18.9687Z" fill="black" />
-                                </svg>
-                            </span>
-                            <!--end::Svg Icon-->
-                        </span>
-                        <span class="menu-title">Changelog v8.0.25</span>
+                        <span class="menu-title">Settings</span>
                     </a>
                 </div>
             </div>

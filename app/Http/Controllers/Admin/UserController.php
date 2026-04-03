@@ -138,15 +138,23 @@ class UserController extends Controller
         $data = $request->except(['avatar', 'new_password', 'new_password_confirmation']);
 
         if ($request->hasFile('avatar')) {
-            // Delete old avatar
-            if ($user->avatar) {
-                Storage::delete('public/avatars/' . $user->avatar);
-            }
-            
             $avatar = $request->file('avatar');
-            $filename = time() . '_' . $avatar->getClientOriginalName();
-            $avatar->storeAs('public/avatars', $filename);
-            $data['avatar'] = $filename;
+
+            if ($avatar->isValid()) {
+
+                // ✅ Delete old avatar (safe)
+                if ($user->avatar && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
+                    Storage::disk('public')->delete('avatars/' . $user->avatar);
+                }
+
+                // ✅ Generate filename
+                $filename = time() . '_' . uniqid() . '.' . $avatar->getClientOriginalExtension();
+
+                // ✅ Store (consistent)
+                Storage::disk('public')->putFileAs('avatars', $avatar, $filename);
+
+                $data['avatar'] = $filename;
+            }
         }
 
         // Handle password change if provided
@@ -279,47 +287,5 @@ class UserController extends Controller
             'success' => true,
             'message' => "{$count} users deleted successfully"
         ]);
-    }
-
-    /**
-     * Export users to CSV
-     */
-    public function export(Request $request)
-    {
-        $users = User::query()
-            ->when($request->status, function($query, $status) {
-                $query->where('status', $status);
-            })
-            ->get();
-
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=users_' . date('Y-m-d') . '.csv',
-        ];
-
-        $callback = function() use ($users) {
-            $file = fopen('php://output', 'w');
-            fwrite($file, "\xEF\xBB\xBF"); // UTF-8 BOM
-            
-            // Headers
-            fputcsv($file, ['ID', 'Name', 'Email', 'Phone', 'Status', 'Last Login', 'Created At']);
-            
-            // Data
-            foreach ($users as $user) {
-                fputcsv($file, [
-                    $user->id,
-                    $user->name,
-                    $user->email,
-                    $user->phone,
-                    $user->status,
-                    $user->last_login_at ? $user->last_login_at->format('d M Y H:i') : '-',
-                    $user->created_at->format('d M Y')
-                ]);
-            }
-            
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
     }
 }

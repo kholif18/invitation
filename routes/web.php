@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CommunicationController;
 use App\Http\Controllers\Admin\EmailCampaignController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\MessageTemplateController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -105,14 +106,17 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
-    Route::post('/profile/settings', [ProfileController::class, 'updateSettings'])->name('profile.settings.update');
     Route::get('/profile/activity', [ProfileController::class, 'activityLog'])->name('profile.activity');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('users', UserController::class);
     Route::post('users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulk-delete');
-    Route::get('users/export', [UserController::class, 'export'])->name('users.export');
     Route::post('users/{id}/change-password', [UserController::class, 'changePassword'])->name('users.change-password');
+
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [SettingController::class, 'edit'])->name('edit');
+        Route::put('/', [SettingController::class, 'update'])->name('update');
+    });
 });
 
 require __DIR__.'/auth.php';
