@@ -218,9 +218,14 @@
             
             <!-- Gift Information -->
             <div class="card mb-6">
-                <div class="card-header">
-                    <h3 class="card-title">Gift Information</h3>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title m-0">Gift Information</h3>
+                    <div class="form-check form-switch form-check-custom form-check-solid m-0">
+                        <input class="form-check-input" type="checkbox" id="giftToggle" checked>
+                        <label class="form-check-label fw-bold mb-0" for="giftToggle">Enable Gift</label>
+                    </div>
                 </div>
+
                 <div class="card-body">
                     <div class="row mb-6">
                         <div class="col-md-12">
@@ -266,8 +271,12 @@
             
             <!-- Gallery -->
             <div class="card mb-6">
-                <div class="card-header">
-                    <h3 class="card-title">Gallery</h3>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title m-0">Gallery</h3>
+                    <div class="form-check form-switch form-check-custom form-check-solid m-0">
+                        <input class="form-check-input" type="checkbox" id="galleryToggle" checked>
+                        <label class="form-check-label fw-bold mb-0" for="galleryToggle">Enable Gallery</label>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="mb-6">
@@ -289,17 +298,20 @@
         
         <!-- Sidebar Column -->
         <div class="col-xl-4">  
-            <!-- Song edit -->
             <div class="card mb-6">
                 <div class="card-header">
-                    <h3 class="card-title"><i class="bi bi-music-note-beamed"></i>Song Theme</h3>
+                    <h3 class="card-title">Invitation Template</h3>
                 </div>
                 <div class="card-body">
                     <div class="mb-4">
-                        <label class="form-check-label" for="song_theme">
-                            Upload Song Theme (MP3)
-                        </label>
-                        <input class="form-control mt-2" type="file" id="song_theme" name="song_theme" accept="audio/*">
+                        <label class="fw-bold mb-2">Tema Undangan</label>
+                        <input type="text" class="form-control" value="Tema Jawa" readonly>
+                        <input type="hidden" name="template_id" value="tema-jawa">
+                    </div>
+                    <div>
+                        <a href="#" class="btn btn-light-primary">
+                            <i class="bi bi-pencil"></i> Sesuaikan / Edit Tema
+                        </a>
                     </div>
                 </div>
             </div>

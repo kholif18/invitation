@@ -1,16 +1,12 @@
 <?php
 
-use App\Http\Controllers\Admin\CommunicationController;
-use App\Http\Controllers\Admin\EmailCampaignController;
-use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\Admin\LinkController;
-use App\Http\Controllers\Admin\MessageTemplateController;
+use App\Http\Controllers\Admin\GuestController;
+use App\Http\Controllers\Admin\InvitationController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\WhatsAppController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\GuestController;
-use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\InvitationViewController;
 use App\Http\Controllers\RSVPController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,39 +21,22 @@ Route::get('/', function () {
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
 
-    // Invitations Routes
-    Route::prefix('invitations')->name('invitations.')->group(function () {
-        Route::get('/', [InvitationController::class, 'index'])->name('index');
-        Route::get('/create', [InvitationController::class, 'create'])->name('create');
-        Route::post('/', [InvitationController::class, 'store'])->name('store');
-        Route::get('/templates', [InvitationController::class, 'templates'])->name('templates');
-        Route::get('/statistics', [InvitationController::class, 'statistics'])->name('statistics');
-        Route::get('/export', [InvitationController::class, 'export'])->name('export');
-        Route::get('/bulk-statistics', [InvitationController::class, 'bulkStatistics'])->name('bulk-statistics');
+    Route::resource('invitations', InvitationController::class);
+    Route::post('invitations/{invitation}/duplicate', [InvitationController::class, 'duplicate'])->name('invitations.duplicate');
     
-        
-        // Link management routes
-        Route::controller(LinkController::class)->group(function () {
-            Route::get('/links', 'index')->name('links');
-            Route::get('/{invitationId}/links', 'show')->name('links.show');
-            Route::post('/links/generate', 'generateLinks')->name('links.generate');
-            Route::get('/links/{invitationId}/data', 'getLinks')->name('links.get');
-            Route::post('/links/send', 'sendLink')->name('links.send');
-            Route::post('/links/bulk-send', 'bulkSendLinks')->name('links.bulk-send');
-            Route::get('/links/statistics/{invitationId}', 'getStatistics')->name('links.statistics');
-            Route::get('/links/export/{invitationId}', 'exportLinks')->name('links.export');
-            Route::post('/links/{linkId}/revoke', 'revokeLink')->name('links.revoke');
-            Route::post('/links/{linkId}/regenerate', 'regenerateLink')->name('links.regenerate');
-        });
-        
-        Route::prefix('{id}')->group(function () {
-            Route::get('/', [InvitationController::class, 'show'])->name('show');
-            Route::get('/edit', [InvitationController::class, 'edit'])->name('edit');
-            Route::put('/', [InvitationController::class, 'update'])->name('update');
-            Route::delete('/', [InvitationController::class, 'destroy'])->name('destroy');
-            Route::post('/send', [InvitationController::class, 'send'])->name('send');
-            Route::post('/duplicate', [InvitationController::class, 'duplicate'])->name('duplicate');
-        });
+    // Guest management routes
+    Route::prefix('invitations/{invitation}/guests')->name('invitations.guests.')->group(function () {
+        Route::get('/', [GuestController::class, 'index'])->name('index');
+        Route::get('/create', [GuestController::class, 'create'])->name('create');
+        Route::post('/', [GuestController::class, 'store'])->name('store');
+        Route::get('/{guest}/edit', [GuestController::class, 'edit'])->name('edit');
+        Route::put('/{guest}', [GuestController::class, 'update'])->name('update');
+        Route::delete('/{guest}', [GuestController::class, 'destroy'])->name('destroy');
+        Route::post('/{guest}/send', [GuestController::class, 'sendInvitation'])->name('send');
+        Route::post('/send-bulk', [GuestController::class, 'sendBulk'])->name('send-bulk');
+        Route::get('/import', [GuestController::class, 'import'])->name('import');
+        Route::post('/import', [GuestController::class, 'processImport'])->name('process-import');
+        Route::get('/export', [GuestController::class, 'export'])->name('export');
     });
 
     // RSVP Routes
@@ -118,5 +97,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         Route::put('/', [SettingController::class, 'update'])->name('update');
     });
 });
+
+// Public invitation viewing routes
+Route::get('invitation/{slug}', [InvitationViewController::class, 'show'])->name('invitation.show');
+Route::get('invitation/{slug}/{code}', [InvitationViewController::class, 'show'])->name('invitation.show.withCode');
+Route::post('invitation/{slug}/wish', [InvitationViewController::class, 'sendWish'])->name('invitation.wish');
 
 require __DIR__.'/auth.php';

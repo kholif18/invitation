@@ -124,7 +124,7 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-3">
-                        <a href="{{ route('admin.invitations.templates') }}" class="btn btn-primary btn-lg">
+                        <a href="#" class="btn btn-primary btn-lg">
                             <i class="fas fa-plus-circle me-2"></i> Create New Invitation
                         </a>
                         <a href="#" class="btn btn-info btn-lg">

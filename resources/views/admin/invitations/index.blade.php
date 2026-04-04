@@ -18,7 +18,7 @@
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end gap-3">
-                <a href="{{ route('admin.invitations.templates') }}" class="btn btn-primary">
+                <a href="#" class="btn btn-primary">
                     <i class="bi bi-plus fs-2"></i>
                     Create Wedding Invitation
                 </a>
@@ -135,7 +135,7 @@
                         <td>{{ \Carbon\Carbon::now()->subDays(rand(1, 30))->format('d M Y') }}</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="#" class="btn btn-sm btn-icon btn-light-primary" data-bs-toggle="tooltip" title="View Invitation">
+                                <a href="" class="btn btn-sm btn-icon btn-light-primary" data-bs-toggle="tooltip" title="View Invitation">
                                     <i class="bi bi-eye fs-2"></i>
                                 </a>
                                 <a href="#" class="btn btn-sm btn-icon btn-light-info" data-bs-toggle="tooltip" title="Edit Invitation">
