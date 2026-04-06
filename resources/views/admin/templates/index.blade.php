@@ -4,6 +4,9 @@
 @section('title', 'Templates Management')
 
 @section('breadcrumb')
+<li class="breadcrumb-item">
+    <span class="bullet bg-gray-200 w-5px h-2px"></span>
+</li>
 <li class="breadcrumb-item text-dark">Templates</li>
 @endsection
 
@@ -52,12 +55,12 @@
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 @if(!$template->is_default)
-                                <button type="button" class="btn btn-sm btn-light set-default" data-id="{{ $template->id }}" data-name="{{ $template->name }}">
+                                <button type="button" class="btn btn-sm btn-light set-default" data-url="{{ route('admin.templates.set-default', $template) }}">
                                     <i class="bi bi-star"></i>
                                 </button>
                                 @endif
                                 @if($template->invitations()->count() === 0)
-                                <button type="button" class="btn btn-sm btn-light-danger delete-template" data-id="{{ $template->id }}" data-name="{{ $template->name }}">
+                                <button type="button" class="btn btn-sm btn-light-danger delete-template" data-url="{{ route('admin.templates.destroy', $template) }}">
                                     <i class="bi bi-trash"></i>
                                 </button>
                                 @endif
@@ -90,8 +93,8 @@
     // Set as default template
     document.querySelectorAll('.set-default').forEach(button => {
         button.addEventListener('click', function() {
-            const templateId = this.getAttribute('data-id');
-            const templateName = this.getAttribute('data-name');
+            const url = this.getAttribute('data-url');
+            const templateName = this.closest('.card').querySelector('.card-title').innerText;
             
             Swal.fire({
                 title: 'Set as Default?',
@@ -101,7 +104,13 @@
                 confirmButtonText: 'Yes, set as default'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = `{{ route('admin.templates.set-default', '') }}/${templateId}`;
+                    // Create a form and submit via POST
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    form.innerHTML = '@csrf';
+                    document.body.appendChild(form);
+                    form.submit();
                 }
             });
         });
@@ -110,8 +119,8 @@
     // Delete template
     document.querySelectorAll('.delete-template').forEach(button => {
         button.addEventListener('click', function() {
-            const templateId = this.getAttribute('data-id');
-            const templateName = this.getAttribute('data-name');
+            const url = this.getAttribute('data-url');
+            const templateName = this.closest('.card').querySelector('.card-title').innerText;
             
             Swal.fire({
                 title: 'Delete Template?',
@@ -124,7 +133,7 @@
                 if (result.isConfirmed) {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `{{ route('admin.templates.destroy', '') }}/${templateId}`;
+                    form.action = url;
                     form.innerHTML = `
                         @csrf
                         @method('DELETE')

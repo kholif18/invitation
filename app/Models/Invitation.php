@@ -42,7 +42,6 @@ class Invitation extends Model
         'gallery_photos',
         'gallery_videos',
         'is_wish_active',
-        'song_theme',
         'template_settings',
         'status',
         'slug'

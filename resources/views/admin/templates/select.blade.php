@@ -3,6 +3,13 @@
 
 @section('title', 'Select Wedding Invitation Template')
 
+@section('breadcrumb')
+<li class="breadcrumb-item">
+    <span class="bullet bg-gray-200 w-5px h-2px"></span>
+</li>
+<li class="breadcrumb-item text-dark">Select Template</li>
+@endsection
+
 @section('content')
 <div class="mb-6">
     <h2>Choose Your Template</h2>
@@ -10,7 +17,7 @@
 </div>
 
 <div class="row g-6">
-    @foreach($templates as $template)
+    @forelse($templates as $template)
     <div class="col-xl-3 col-md-4 col-sm-6">
         <div class="card h-100 template-card @if($template->is_default) border-primary @endif">
             <div class="card-header p-0">
@@ -18,6 +25,9 @@
                     <img src="{{ $template->thumbnail_url }}" class="card-img-top" alt="{{ $template->name }}" style="height: 250px; object-fit: cover;">
                     @if($template->is_default)
                         <span class="badge badge-primary position-absolute top-0 end-0 m-2">Default</span>
+                    @endif
+                    @if(!$template->is_active)
+                        <span class="badge badge-secondary position-absolute top-0 start-0 m-2">Inactive</span>
                     @endif
                 </div>
             </div>
@@ -30,26 +40,44 @@
                     <span class="badge badge-light-secondary">v{{ $template->version }}</span>
                 </div>
                 
-                <div class="mt-3">
-                    <a href="{{ route('admin.templates.preview', $template) }}" class="btn btn-sm btn-light me-2" target="_blank">
+                <div class="mt-3 d-flex gap-2">
+                    <a href="{{ route('admin.templates.preview', $template) }}" class="btn btn-sm btn-light flex-fill" target="_blank">
                         <i class="bi bi-eye"></i> Preview
                     </a>
-                    <a href="{{ route('admin.invitations.create', ['template' => $template->id]) }}" class="btn btn-sm btn-primary">
+                    @if($template->is_active)
+                    <a href="{{ route('admin.invitations.create', ['template' => $template->id]) }}" class="btn btn-sm btn-primary flex-fill">
                         <i class="bi bi-plus-circle"></i> Select
                     </a>
+                    @else
+                    <button class="btn btn-sm btn-secondary flex-fill" disabled>
+                        <i class="bi bi-lock"></i> Inactive
+                    </button>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
-    @endforeach
+    @empty
+    <div class="col-12">
+        <div class="text-center py-10">
+            <i class="bi bi-grid-3x3-gap-fill fs-1 text-muted"></i>
+            <h3 class="mt-3">No Templates Available</h3>
+            <p class="text-muted">Please upload a template first before creating an invitation.</p>
+            <a href="{{ route('admin.templates.create') }}" class="btn btn-primary">
+                <i class="bi bi-upload"></i> Upload Template
+            </a>
+        </div>
+    </div>
+    @endforelse
 </div>
 
+@if($templates->count() > 0)
 <div class="mt-6 text-center">
     <a href="{{ route('admin.templates.index') }}" class="btn btn-link">
         <i class="bi bi-grid-3x3-gap-fill"></i> Browse All Templates
     </a>
 </div>
-@endsection
+@endif
 
 @push('styles')
 <style>
@@ -67,5 +95,10 @@
         border-top-left-radius: 0.5rem;
         border-top-right-radius: 0.5rem;
     }
+    
+    .btn-group {
+        width: 100%;
+    }
 </style>
 @endpush
+@endsection

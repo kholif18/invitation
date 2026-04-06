@@ -229,6 +229,40 @@ class TemplateController extends Controller
 
     public function preview(Template $template)
     {
+        // Create a dummy invitation for preview
+        $invitation = new \App\Models\Invitation();
+        $invitation->groom_full_name = 'Sample Groom';
+        $invitation->groom_nickname = 'Sample';
+        $invitation->groom_father_name = 'Father Name';
+        $invitation->groom_mother_name = 'Mother Name';
+        $invitation->groom_address = 'Sample Address';
+        $invitation->bride_full_name = 'Sample Bride';
+        $invitation->bride_nickname = 'Sample';
+        $invitation->bride_father_name = 'Father Name';
+        $invitation->bride_mother_name = 'Mother Name';
+        $invitation->bride_address = 'Sample Address';
+        $invitation->has_akad = true;
+        $invitation->akad_date = now();
+        $invitation->akad_time = now();
+        $invitation->akad_location = 'Sample Location';
+        $invitation->has_reception = true;
+        $invitation->receptions = [['name' => 'Wedding Reception', 'date' => now()->addDay(), 'location' => 'Sample Location']];
+        $invitation->has_gift = true;
+        $invitation->bank_accounts = [['bank_name' => 'BCA', 'account_name' => 'Sample Account', 'account_number' => '1234567890']];
+        $invitation->has_gallery = true;
+        $invitation->gallery_photos = [];
+        $invitation->is_wish_active = true;
+        $invitation->template = $template;
+        $invitation->template_settings = $template->settings ?? [];
+        
+        $wishes = collect([]);
+        $guest = null;
+        
+        // Use the template's view
+        if ($template->blade_file && view()->exists($template->blade_file)) {
+            return view($template->blade_file, compact('invitation', 'wishes', 'guest'));
+        }
+        
         return view('templates.preview', compact('template'));
     }
 
@@ -238,6 +272,16 @@ class TemplateController extends Controller
         // Implementation depends on your needs
         return redirect()->route('admin.templates.index')
             ->with('info', 'Download feature coming soon.');
+    }
+
+    public function select()
+    {
+        $templates = Template::where('is_active', true)
+            ->orderBy('is_default', 'desc')
+            ->orderBy('name')
+            ->get();
+        
+        return view('admin.templates.select', compact('templates'));
     }
 
     private function findBladeTemplate($path)
@@ -311,13 +355,8 @@ class TemplateController extends Controller
         return rmdir($path);
     }
 
-    public function select()
+    public function previewIframe(Template $template)
     {
-        $templates = Template::where('is_active', true)
-            ->orderBy('is_default', 'desc')
-            ->orderBy('name')
-            ->get();
-        
-        return view('admin.templates.select', compact('templates'));
+        return view('admin.templates.preview-iframe', compact('template'));
     }
 }
