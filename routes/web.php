@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\GuestController;
 use App\Http\Controllers\Admin\InvitationController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\InvitationViewController;
@@ -21,6 +22,13 @@ Route::get('/', function () {
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
 
+    // Template management
+    Route::resource('templates', TemplateController::class);
+    Route::get('templates/select', [TemplateController::class, 'select'])->name('templates.select');
+    Route::post('templates/{template}/set-default', [TemplateController::class, 'setDefault'])->name('templates.set-default');
+    Route::get('templates/{template}/preview', [TemplateController::class, 'preview'])->name('templates.preview');
+    Route::get('templates/{template}/download', [TemplateController::class, 'download'])->name('templates.download');
+    
     Route::resource('invitations', InvitationController::class);
     Route::post('invitations/{invitation}/duplicate', [InvitationController::class, 'duplicate'])->name('invitations.duplicate');
     

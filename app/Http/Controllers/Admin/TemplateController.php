@@ -310,4 +310,14 @@ class TemplateController extends Controller
         
         return rmdir($path);
     }
+
+    public function select()
+    {
+        $templates = Template::where('is_active', true)
+            ->orderBy('is_default', 'desc')
+            ->orderBy('name')
+            ->get();
+        
+        return view('admin.templates.select', compact('templates'));
+    }
 }
