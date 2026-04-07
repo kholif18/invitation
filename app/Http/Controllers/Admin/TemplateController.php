@@ -228,42 +228,99 @@ class TemplateController extends Controller
     }
 
     public function preview(Template $template)
-    {
-        // Create a dummy invitation for preview
+    {  
+        // Create dummy invitation data for preview
         $invitation = new \App\Models\Invitation();
-        $invitation->groom_full_name = 'Sample Groom';
-        $invitation->groom_nickname = 'Sample';
-        $invitation->groom_father_name = 'Father Name';
-        $invitation->groom_mother_name = 'Mother Name';
-        $invitation->groom_address = 'Sample Address';
-        $invitation->bride_full_name = 'Sample Bride';
-        $invitation->bride_nickname = 'Sample';
-        $invitation->bride_father_name = 'Father Name';
-        $invitation->bride_mother_name = 'Mother Name';
-        $invitation->bride_address = 'Sample Address';
+        $invitation->groom_full_name = 'Bagas Prakoso';
+        $invitation->groom_nickname = 'Bagas';
+        $invitation->groom_father_name = 'Supriyadi';
+        $invitation->groom_mother_name = 'Sri Mulyani';
+        $invitation->groom_address = 'Jl. Merdeka No. 123, Jakarta';
+        $invitation->groom_photo = null;
+        
+        $invitation->bride_full_name = 'Siti Nurhaliza';
+        $invitation->bride_nickname = 'Siti';
+        $invitation->bride_father_name = 'Hasanudin';
+        $invitation->bride_mother_name = 'Fatimah';
+        $invitation->bride_address = 'Jl. Sudirman No. 456, Jakarta';
+        $invitation->bride_photo = null;
+        
         $invitation->has_akad = true;
-        $invitation->akad_date = now();
-        $invitation->akad_time = now();
-        $invitation->akad_location = 'Sample Location';
+        $invitation->akad_date = now()->addDays(30);
+        $invitation->akad_time = now()->addDays(30)->setTime(9, 0);
+        $invitation->akad_location = 'Masjid Agung, Jakarta Pusat';
+        
         $invitation->has_reception = true;
-        $invitation->receptions = [['name' => 'Wedding Reception', 'date' => now()->addDay(), 'location' => 'Sample Location']];
+        $invitation->receptions = [
+            [
+                'name' => 'Resepsi Pernikahan',
+                'date' => now()->addDays(30)->format('Y-m-d'), 
+                'location' => 'Hotel Indonesia, Jakarta Pusat'
+            ]
+        ];
+        
         $invitation->has_gift = true;
-        $invitation->bank_accounts = [['bank_name' => 'BCA', 'account_name' => 'Sample Account', 'account_number' => '1234567890']];
+        $invitation->gift_image = null;
+        $invitation->bank_accounts = [
+            [
+                'bank_name' => 'Bank Central Asia (BCA)', 
+                'account_name' => 'Bambang & Siti', 
+                'account_number' => '1234567890'
+            ],
+            [
+                'bank_name' => 'Bank Mandiri', 
+                'account_name' => 'Bambang & Siti', 
+                'account_number' => '0987654321'
+            ]
+        ];
+        
         $invitation->has_gallery = true;
+        // Dummy gallery images (gunakan placeholder)
         $invitation->gallery_photos = [];
+        $invitation->gallery_videos = [];
+        
         $invitation->is_wish_active = true;
+        $invitation->maps = [
+            'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.822561!3d-6.194741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5390917b759%3A0xd8f6b9e1e2f5f2e1!2sJakarta!5e0!3m2!1sid!2sid!4v1699999999999!5m2!1sid!2sid'
+        ];
         $invitation->template = $template;
         $invitation->template_settings = $template->settings ?? [];
         
-        $wishes = collect([]);
+        // Dummy wishes for preview
+        $wishes = collect([
+            (object)[
+                'guest_name' => 'Ibu Dewi',
+                'message' => 'Selamat ya nak! Semoga menjadi keluarga yang sakinah mawaddah warahmah.',
+                'attendance' => 'yes',
+                'attendance_count' => 2,
+                'created_at' => now()
+            ],
+            (object)[
+                'guest_name' => 'Pak Budi',
+                'message' => 'Barakallah, semoga langgeng dan bahagia selalu!',
+                'attendance' => 'yes',
+                'attendance_count' => 3,
+                'created_at' => now()->subHours(2)
+            ],
+            (object)[
+                'guest_name' => 'Susi',
+                'message' => 'Selamat ya teman! Doa yang terbaik untuk kalian berdua.',
+                'attendance' => 'maybe',
+                'attendance_count' => 1,
+                'created_at' => now()->subDay()
+            ]
+        ]);
+        
         $guest = null;
+        $isPreview = true; // Flag untuk preview mode
         
         // Use the template's view
         if ($template->blade_file && view()->exists($template->blade_file)) {
-            return view($template->blade_file, compact('invitation', 'wishes', 'guest'));
+            return view($template->blade_file, compact('invitation', 'wishes', 'guest', 'isPreview'));
         }
         
-        return view('templates.preview', compact('template'));
+        // Fallback jika template view tidak ditemukan
+        return view('admin.templates.preview-fallback', compact('template'));
     }
 
     public function download(Template $template)
@@ -357,6 +414,66 @@ class TemplateController extends Controller
 
     public function previewIframe(Template $template)
     {
-        return view('admin.templates.preview-iframe', compact('template'));
+        // Create dummy invitation data for preview
+        $invitation = new \App\Models\Invitation();
+        $invitation->groom_full_name = 'Bagas Prakoso';
+        $invitation->groom_nickname = 'Bagas';
+        $invitation->groom_father_name = 'Supriyadi';
+        $invitation->groom_mother_name = 'Sri Mulyani';
+        $invitation->groom_address = 'Jl. Merdeka No. 123, Jakarta';
+        $invitation->groom_photo = null;
+        
+        $invitation->bride_full_name = 'Siti Nurhaliza';
+        $invitation->bride_nickname = 'Siti';
+        $invitation->bride_father_name = 'Hasanudin';
+        $invitation->bride_mother_name = 'Fatimah';
+        $invitation->bride_address = 'Jl. Sudirman No. 456, Jakarta';
+        $invitation->bride_photo = null;
+        
+        $invitation->has_akad = true;
+        $invitation->akad_date = now()->addDays(30);
+        $invitation->akad_time = now()->addDays(30)->setTime(9, 0);
+        $invitation->akad_location = 'Masjid Agung, Jakarta Pusat';
+        
+        $invitation->has_reception = true;
+        $invitation->receptions = [
+            [
+                'name' => 'Resepsi Pernikahan',
+                'date' => now()->addDays(30)->format('Y-m-d'), 
+                'location' => 'Hotel Indonesia, Jakarta Pusat'
+            ]
+        ];
+        
+        $invitation->has_gift = true;
+        $invitation->gift_image = null;
+        $invitation->bank_accounts = [
+            [
+                'bank_name' => 'Bank Central Asia (BCA)', 
+                'account_name' => 'Bambang & Siti', 
+                'account_number' => '1234567890'
+            ]
+        ];
+        
+        $invitation->has_gallery = true;
+        $invitation->gallery_photos = [];
+        $invitation->gallery_videos = [];
+        
+        $invitation->is_wish_active = true;
+        $invitation->maps = [
+            'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.822561!3d-6.194741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5390917b759%3A0xd8f6b9e1e2f5f2e1!2sJakarta!5e0!3m2!1sid!2sid!4v1699999999999!5m2!1sid!2sid'
+        ];
+        $invitation->template = $template;
+        $invitation->template_settings = $template->settings ?? [];
+        
+        $wishes = collect([]);
+        $guest = null;
+        $isPreview = true;
+        
+        // Use the template's view
+        if ($template->blade_file && view()->exists($template->blade_file)) {
+            return view($template->blade_file, compact('invitation', 'wishes', 'guest', 'isPreview'));
+        }
+        
+        return view('admin.templates.preview-fallback', compact('template'));
     }
 }

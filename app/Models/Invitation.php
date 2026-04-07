@@ -16,6 +16,7 @@ class Invitation extends Model
     protected $fillable = [
         'template_id',
         'template_slug',
+        'template_settings',
         'groom_full_name',
         'groom_nickname',
         'groom_father_name',
@@ -42,7 +43,6 @@ class Invitation extends Model
         'gallery_photos',
         'gallery_videos',
         'is_wish_active',
-        'template_settings',
         'status',
         'slug'
     ];

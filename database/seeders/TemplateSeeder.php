@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Template;
 
 class TemplateSeeder extends Seeder
 {
@@ -13,52 +12,43 @@ class TemplateSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('templates')->insert([
+        // Template: Classic Elegant
+        $classicElegant = Template::updateOrCreate(
+            ['slug' => 'classic-elegant'],
             [
-                'name' => 'Tema Jawa Klasik',
-                'slug' => 'tema-jawa-klasik',
-                'category' => 'jawa',
-                'description' => 'Template undangan pernikahan dengan nuansa Jawa klasik yang elegan',
+                'name' => 'Classic Elegant',
+                'category' => 'classic',
+                'description' => 'Template undangan elegan dengan nuansa klasik yang timeless. Dilengkapi dengan warna emas dan coklat yang mewah, cocok untuk pernikahan dengan tema tradisional yang elegan.',
+                'blade_file' => 'templates.classic-elegant.index',
+                'css_file' => 'assets/templates/classic-elegant/css/style.css',
+                'js_file' => 'assets/templates/classic-elegant/js/script.js',
+                'version' => '1.0.0',
+                'author' => 'WeddingInv System',
+                'author_url' => null,
                 'is_active' => true,
                 'is_default' => true,
-                'config' => json_encode([
-                    'colors' => ['primary' => '#8B4513', 'secondary' => '#D2691E'],
-                    'fonts' => ['primary' => 'Poppins', 'secondary' => 'Playfair Display'],
+                'config' => [
+                    'colors' => ['#8B4513', '#DAA520', '#FDF5E6', '#5C3317'],
+                    'fonts' => ['Playfair Display', 'Poppins', 'Montserrat'],
                     'layouts' => ['default', 'modern', 'simple']
-                ]),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Modern Minimalis',
-                'slug' => 'modern-minimalis',
-                'category' => 'modern',
-                'description' => 'Template undangan modern dengan desain minimalis dan clean',
-                'is_active' => true,
-                'is_default' => false,
-                'config' => json_encode([
-                    'colors' => ['primary' => '#2C3E50', 'secondary' => '#34495E'],
-                    'fonts' => ['primary' => 'Montserrat', 'secondary' => 'Open Sans'],
-                    'layouts' => ['default', 'grid', 'masonry']
-                ]),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Elegant Gold',
-                'slug' => 'elegant-gold',
-                'category' => 'elegant',
-                'description' => 'Template mewah dengan aksen emas yang elegan',
-                'is_active' => true,
-                'is_default' => false,
-                'config' => json_encode([
-                    'colors' => ['primary' => '#C5A059', 'secondary' => '#2C2C2C'],
-                    'fonts' => ['primary' => 'Cormorant Garamond', 'secondary' => 'Lato'],
-                    'layouts' => ['default', 'luxury', 'royal']
-                ]),
-                'created_at' => now(),
-                'updated_at' => now(),
+                ],
+                'settings' => [
+                    'enable_music' => true,
+                    'show_countdown' => true,
+                    'show_gallery' => true,
+                    'show_gift' => true,
+                    'show_rsvp' => true,
+                    'primary_color' => '#8B4513',
+                    'secondary_color' => '#DAA520',
+                    'accent_color' => '#FDF5E6',
+                    'text_color' => '#333333',
+                    'primary_font' => 'Poppins',
+                    'title_font' => 'Playfair Display'
+                ]
             ]
-        ]);
+        );
+        
+        $this->command->info('Classic Elegant template created successfully!');
+        $this->command->info('Template ID: ' . $classicElegant->id);
     }
 }

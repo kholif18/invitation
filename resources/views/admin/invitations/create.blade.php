@@ -19,8 +19,10 @@
 @endsection
 
 @section('content')
-<form id="invitationForm" enctype="multipart/form-data">
+<form id="invitationForm" method="POST" action="{{ route('admin.invitations.store') }}" enctype="multipart/form-data">
     @csrf
+    <input type="hidden" name="template_id" value="{{ $template->id }}">
+    <input type="hidden" name="status" id="statusInput" value="draft">
     <div class="row g-6">
         <!-- Main Form Column -->
         <div class="col-xl-8">
@@ -133,7 +135,8 @@
                 </div>
                 <div class="card-body">
                     <div class="form-check form-switch form-check-custom form-check-solid mb-6">
-                        <input class="form-check-input" type="checkbox" id="akadNikahToggle">
+                        <input type="hidden" name="akadNikahToggle" value="0">
+                        <input class="form-check-input" type="checkbox" name="akadNikahToggle" id="akadNikahToggle" value="1">
                         <label class="form-check-label fw-bold" for="akadNikahToggle">
                             Enable Akad Nikah Ceremony
                         </label>
@@ -161,7 +164,8 @@
                     <div class="separator my-5"></div>
                     
                     <div class="form-check form-switch form-check-custom form-check-solid mb-6">
-                        <input class="form-check-input" type="checkbox" id="resepsiToggle">
+                        <input type="hidden" name="resepsiToggle" value="0">
+                        <input class="form-check-input" type="checkbox" name="resepsiToggle" id="resepsiToggle" value="1">
                         <label class="form-check-label fw-bold" for="resepsiToggle">
                             Enable Reception
                         </label>
@@ -221,7 +225,8 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title m-0">Gift Information</h3>
                     <div class="form-check form-switch form-check-custom form-check-solid m-0">
-                        <input class="form-check-input" type="checkbox" id="giftToggle" checked>
+                        <input type="hidden" name="giftToggle" value="0">
+                        <input class="form-check-input" type="checkbox" name="giftToggle" id="giftToggle" value="1" checked>
                         <label class="form-check-label fw-bold mb-0" for="giftToggle">Enable Gift</label>
                     </div>
                 </div>
@@ -274,7 +279,8 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title m-0">Gallery</h3>
                     <div class="form-check form-switch form-check-custom form-check-solid m-0">
-                        <input class="form-check-input" type="checkbox" id="galleryToggle" checked>
+                        <input type="hidden" name="galleryToggle" value="0">
+                        <input class="form-check-input" type="checkbox" name="galleryToggle" id="galleryToggle" value="1" checked>
                         <label class="form-check-label fw-bold mb-0" for="galleryToggle">Enable Gallery</label>
                     </div>
                 </div>
@@ -305,13 +311,26 @@
                 <div class="card-body">
                     <div class="mb-4">
                         <label class="fw-bold mb-2">Tema Undangan</label>
-                        <input type="text" class="form-control" value="Tema Jawa" readonly>
-                        <input type="hidden" name="template_id" value="tema-jawa">
+                        <input type="text" class="form-control" value="{{ $template->name }}" readonly>
+                        <input type="hidden" name="template_id" value="{{ $template->id }}">
                     </div>
-                    <div>
-                        <a href="#" class="btn btn-light-primary">
-                            <i class="bi bi-pencil"></i> Sesuaikan / Edit Tema
-                        </a>
+                    <div class="mb-4">
+                        <label class="fw-bold mb-2">Template Version</label>
+                        <input type="text" class="form-control" value="v{{ $template->version }}" readonly>
+                    </div>
+                    <div class="mb-4">
+                        <label class="fw-bold mb-2">Category</label>
+                        <input type="text" class="form-control" value="{{ ucfirst($template->category) }}" readonly>
+                    </div>
+                    @if($template->description)
+                    <div class="mb-4">
+                        <label class="fw-bold mb-2">Description</label>
+                        <textarea class="form-control" rows="2" readonly>{{ $template->description }}</textarea>
+                    </div>
+                    @endif
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <small>Template settings can be customized after the invitation is created.</small>
                     </div>
                 </div>
             </div>
@@ -655,77 +674,24 @@
             }
         }
         
-        // Check if at least one sending method is selected
-        const sendEmail = document.getElementById('sendEmail').checked;
-        const sendWhatsapp = document.getElementById('sendWhatsapp').checked;
-        
-        if(!sendEmail && !sendWhatsapp) {
-            Swal.fire('Error', 'Please select at least one sending method (Email or WhatsApp)', 'error');
-            return false;
-        }
-        
-        // Check if guests exist
-        if(guests.length === 0) {
-            Swal.fire('Error', 'Please add at least one guest', 'error');
-            return false;
-        }
-        
         return true;
     }
     
-    // Save Draft
-    document.getElementById('saveDraftBtn').addEventListener('click', function() {
+   // Fix the submit buttons
+    document.getElementById('saveDraftBtn').onclick = function(e) {
+        e.preventDefault();
         if(validateWeddingForm()) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Draft Saved!',
-                text: 'Your wedding invitation has been saved as draft.',
-                timer: 2000
-            });
+            document.getElementById('statusInput').value = 'draft';
+            document.getElementById('invitationForm').submit();
         }
-    });
-    
-    // Send Invitation
-    document.getElementById('sendInvitationBtn').addEventListener('click', function() {
-        if(!validateWeddingForm()) return;
-        
-        Swal.fire({
-            title: 'Send Invitation?',
-            text: `This will send invitation to ${guests.length} guest(s) via ${getSendingMethods()}`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, send it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Here you would normally submit the form via AJAX or regular submit
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Invitation Sent!',
-                    text: 'Your wedding invitation has been sent successfully.',
-                    timer: 2000
-                }).then(() => {
-                    window.location.href = "{{ route('admin.invitations.index') }}";
-                });
-            }
-        });
-    });
-    
-    function getSendingMethods() {
-        const methods = [];
-        if(document.getElementById('sendEmail').checked) methods.push('Email');
-        if(document.getElementById('sendWhatsapp').checked) methods.push('WhatsApp');
-        return methods.join(' and ');
     }
 
-    document.getElementById('saveDraftBtn').onclick = function() {
-        document.getElementById('statusInput').value = 'draft';
-        document.getElementById('invitationForm').submit();
-    }
-
-    document.getElementById('sendInvitationBtn').onclick = function() {
-        document.getElementById('statusInput').value = 'published';
-        document.getElementById('invitationForm').submit();
+    document.getElementById('sendInvitationBtn').onclick = function(e) {
+        e.preventDefault();
+        if(validateWeddingForm()) {
+            document.getElementById('statusInput').value = 'published';
+            document.getElementById('invitationForm').submit();
+        }
     }
 
 </script>

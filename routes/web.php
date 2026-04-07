@@ -32,6 +32,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     Route::resource('invitations', InvitationController::class);
     Route::post('invitations/{invitation}/duplicate', [InvitationController::class, 'duplicate'])->name('invitations.duplicate');
+    Route::get('invitations/{invitation}/customize-template', [InvitationController::class, 'customizeTemplate'])->name('invitations.customize-template');
+    Route::put('invitations/{invitation}/update-template-settings', [InvitationController::class, 'updateTemplateSettings'])->name('invitations.update-template-settings');
     
     // Guest management routes
     Route::prefix('invitations/{invitation}/guests')->name('invitations.guests.')->group(function () {

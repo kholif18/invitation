@@ -17,6 +17,7 @@ return new class extends Migration
             // Template
             $table->foreignId('template_id')->constrained()->onDelete('restrict');
             $table->string('template_slug')->nullable();
+            $table->json('template_settings')->nullable();
             
             // Groom Information
             $table->string('groom_full_name');

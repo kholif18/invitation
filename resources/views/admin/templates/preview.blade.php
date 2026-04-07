@@ -20,7 +20,10 @@
             <h2>{{ $template->name }}</h2>
             <p class="text-muted">{{ $template->description }}</p>
         </div>
-        <div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.templates.edit', $template) }}" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Edit Template
+            </a>
             <a href="{{ route('admin.invitations.create', ['template' => $template->id]) }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Use This Template
             </a>
@@ -35,8 +38,8 @@
     <div class="card-header">
         <h3 class="card-title">Template Preview</h3>
         <div class="card-toolbar">
-            <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-light" id="desktopView">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-light active" id="desktopView">
                     <i class="bi bi-pc-display"></i> Desktop
                 </button>
                 <button type="button" class="btn btn-sm btn-light" id="tabletView">
@@ -49,10 +52,10 @@
         </div>
     </div>
     <div class="card-body p-0">
-        <div class="preview-container" style="background: #f5f5f5; min-height: 600px;">
+        <div class="preview-container" style="background: #f5f5f5; min-height: 600px; padding: 20px;">
             <iframe src="{{ route('admin.templates.preview-iframe', $template) }}" 
                     id="previewIframe"
-                    style="width: 100%; height: 80vh; border: none; background: white; transition: all 0.3s ease;">
+                    style="width: 100%; height: 80vh; border: 1px solid #ddd; background: white; transition: all 0.3s ease; display: block; margin: 0 auto;">
             </iframe>
         </div>
     </div>
@@ -76,13 +79,13 @@
                     </tr>
                     <tr>
                         <th>Version</th>
-                        <td>{{ $template->version }}</td>
+                        <td>v{{ $template->version }}</td>
                     </tr>
                     <tr>
                         <th>Author</th>
                         <td>
                             @if($template->author_url)
-                                <a href="{{ $template->author_url }}" target="_blank">{{ $template->author }}</a>
+                                <a href="{{ $template->author_url }}" target="_blank">{{ $template->author ?? '-' }}</a>
                             @else
                                 {{ $template->author ?? '-' }}
                             @endif
@@ -104,53 +107,57 @@
                 </table>
             </div>
             <div class="col-md-6">
-                <h5>Available Options</h5>
-                @if($template->config)
-                    <ul>
-                        @if(isset($template->config['colors']))
-                            <li><strong>Colors:</strong> {{ implode(', ', $template->config['colors']) }}</li>
-                        @endif
-                        @if(isset($template->config['fonts']))
-                            <li><strong>Fonts:</strong> {{ implode(', ', $template->config['fonts']) }}</li>
-                        @endif
-                        @if(isset($template->config['layouts']))
-                            <li><strong>Layouts:</strong> {{ implode(', ', $template->config['layouts']) }}</li>
-                        @endif
-                    </ul>
-                @else
-                    <p class="text-muted">No additional options available</p>
-                @endif
+                <h5>Thumbnail Preview</h5>
+                <img src="{{ $template->thumbnail_url }}" class="img-fluid rounded mb-3" style="max-height: 150px;">
+                
+                <h5>Full Preview Image</h5>
+                <img src="{{ $template->preview_url }}" class="img-fluid rounded" style="max-height: 300px; width: auto;">
             </div>
         </div>
+        
+        @if($template->config)
+        <div class="row mt-4">
+            <div class="col-12">
+                <h5>Available Template Options</h5>
+                <ul>
+                    @if(isset($template->config['colors']))
+                        <li><strong>Colors:</strong> {{ implode(', ', $template->config['colors']) }}</li>
+                    @endif
+                    @if(isset($template->config['fonts']))
+                        <li><strong>Fonts:</strong> {{ implode(', ', $template->config['fonts']) }}</li>
+                    @endif
+                    @if(isset($template->config['layouts']))
+                        <li><strong>Layouts:</strong> {{ implode(', ', $template->config['layouts']) }}</li>
+                    @endif
+                </ul>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 
 @push('scripts')
 <script>
     // View mode switching
-    document.getElementById('desktopView').addEventListener('click', function() {
-        const iframe = document.getElementById('previewIframe');
-        iframe.style.width = '100%';
-        iframe.style.maxWidth = '1200px';
-        iframe.style.margin = '0 auto';
-        iframe.style.display = 'block';
-    });
+    const desktopBtn = document.getElementById('desktopView');
+    const tabletBtn = document.getElementById('tabletView');
+    const mobileBtn = document.getElementById('mobileView');
+    const iframe = document.getElementById('previewIframe');
     
-    document.getElementById('tabletView').addEventListener('click', function() {
-        const iframe = document.getElementById('previewIframe');
-        iframe.style.width = '768px';
-        iframe.style.maxWidth = '768px';
+    function setViewMode(width, isActive) {
+        iframe.style.width = width;
+        iframe.style.maxWidth = width;
         iframe.style.margin = '0 auto';
         iframe.style.display = 'block';
-    });
+        
+        // Update active state
+        [desktopBtn, tabletBtn, mobileBtn].forEach(btn => btn.classList.remove('active'));
+        isActive.classList.add('active');
+    }
     
-    document.getElementById('mobileView').addEventListener('click', function() {
-        const iframe = document.getElementById('previewIframe');
-        iframe.style.width = '375px';
-        iframe.style.maxWidth = '375px';
-        iframe.style.margin = '0 auto';
-        iframe.style.display = 'block';
-    });
+    desktopBtn.addEventListener('click', () => setViewMode('100%', desktopBtn));
+    tabletBtn.addEventListener('click', () => setViewMode('768px', tabletBtn));
+    mobileBtn.addEventListener('click', () => setViewMode('375px', mobileBtn));
 </script>
 @endpush
 @endsection

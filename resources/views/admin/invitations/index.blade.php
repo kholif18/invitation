@@ -18,7 +18,7 @@
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end gap-3">
-                <a href="#" class="btn btn-primary">
+                <a href="{{ route('admin.templates.select') }}" class="btn btn-primary">
                     <i class="bi bi-plus fs-2"></i>
                     Create Wedding Invitation
                 </a>
@@ -30,7 +30,7 @@
         <!-- Filter Section -->
         <div class="d-flex flex-wrap gap-3 mb-6">
             <div class="position-relative">
-                <input type="text" class="form-control w-250px" placeholder="Search by couple name or event..." id="searchInput">
+                <input type="text" class="form-control w-250px" placeholder="Search by couple name..." id="searchInput">
                 <span class="position-absolute top-50 end-0 translate-middle-y me-3">
                     <i class="bi bi-magnifier fs-3"></i>
                 </span>
@@ -39,9 +39,8 @@
             <select class="form-select w-150px" id="statusFilter">
                 <option value="">All Status</option>
                 <option value="draft">Draft</option>
-                <option value="sent">Sent</option>
-                <option value="pending">Pending</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="published">Published</option>
+                <option value="archived">Archived</option>
             </select>
 
             <button class="btn btn-light-primary" id="resetFilter">
@@ -63,162 +62,185 @@
                         <th class="min-w-100px">Status</th>
                         <th class="min-w-150px">Created At</th>
                         <th class="min-w-150px">Actions</th>
-                    </tr>
+                    </td>
                 </thead>
                 <tbody id="invitationsTableBody">
-                    @for($i = 1; $i <= 10; $i++)
+                    @forelse($invitations as $invitation)
                     @php
-                        $groomNames = ['John', 'Michael', 'David', 'James', 'Robert'];
-                        $brideNames = ['Sarah', 'Emma', 'Lisa', 'Anna', 'Maria'];
-                        $groom = $groomNames[array_rand($groomNames)];
-                        $bride = $brideNames[array_rand($brideNames)];
-                        $templates = [
-                            'elegant' => 'Elegant Classic',
-                            'modern' => 'Modern Minimalist',
-                            'floral' => 'Floral Romance',
-                            'premium' => 'Premium Gold'
-                        ];
-                        $templateKey = array_rand($templates);
-                        $template = $templates[$templateKey];
-                        $templateBadgeClass = match($templateKey) {
-                            'elegant' => 'primary',
-                            'modern' => 'info',
-                            'floral' => 'success',
-                            'premium' => 'warning',
-                            default => 'secondary'
-                        };
-                        $statuses = ['draft', 'sent', 'pending', 'cancelled'];
-                        $status = $statuses[array_rand($statuses)];
-                        $statusBadge = match($status) {
+                        $statusBadge = match($invitation->status) {
                             'draft' => 'secondary',
-                            'sent' => 'success',
-                            'pending' => 'warning',
-                            'cancelled' => 'danger',
+                            'published' => 'success',
+                            'archived' => 'danger',
                             default => 'secondary'
                         };
+                        
+                        $weddingDate = $invitation->getWeddingDateAttribute();
+                        $guestsCount = $invitation->guests_count ?? $invitation->guests()->count();
+                        $confirmedRsvp = $invitation->wishes()->where('attendance', 'yes')->count();
                     @endphp
                     <tr>
-                        <td class="ps-4">{{ $i }}</td>
+                        <td class="ps-4">{{ $loop->iteration }}</td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <div class="symbol symbol-40px symbol-circle me-3">
-                                    <div class="symbol-label bg-light-{{ $templateBadgeClass }}">
-                                        <i class="bi bi-heart fs-2 text-{{ $templateBadgeClass }}"></i>
+                                    <div class="symbol-label bg-light-primary">
+                                        <i class="bi bi-heart fs-2 text-primary"></i>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-column">
-                                    <span class="fw-bold">{{ $groom }} & {{ $bride }}</span>
-                                    <span class="text-muted fs-7">{{ $groom }} & {{ $bride }}'s Wedding</span>
+                                    <span class="fw-bold">{{ $invitation->groom_full_name }} & {{ $invitation->bride_full_name }}</span>
+                                    <span class="text-muted fs-7">{{ $invitation->groom_nickname }} & {{ $invitation->bride_nickname }}</span>
                                 </div>
                             </div>
                         </td>
                         <td>
+                            @if($weddingDate)
                             <div class="d-flex flex-column">
-                                <span class="fw-bold">{{ \Carbon\Carbon::now()->addDays(rand(5, 60))->format('d M Y') }}</span>
-                                <span class="text-muted fs-7">{{ \Carbon\Carbon::now()->addDays(rand(5, 60))->format('H:i') }}</span>
+                                <span class="fw-bold">{{ $weddingDate->format('d M Y') }}</span>
+                                @if($invitation->akad_time)
+                                <span class="text-muted fs-7">{{ \Carbon\Carbon::parse($invitation->akad_time)->format('H:i') }} WIB</span>
+                                @endif
                             </div>
+                            @else
+                            <span class="text-muted">-</span>
+                            @endif
                         </td>
                         <td>
-                            <span class="badge badge-light-{{ $templateBadgeClass }} fw-bold px-3 py-2">{{ $template }}</span>
+                            <span class="badge badge-light-primary fw-bold px-3 py-2">
+                                {{ $invitation->template->name ?? 'Unknown' }}
+                            </span>
                         </td>
                         <td>
                             <div class="d-flex flex-column">
-                                <span class="fw-bold">{{ rand(50, 500) }} Guests</span>
-                                <span class="text-muted fs-7">{{ rand(0, 100) }} confirmed RSVP</span>
+                                <span class="fw-bold">{{ $guestsCount }} Guests</span>
+                                <span class="text-muted fs-7">{{ $confirmedRsvp }} confirmed RSVP</span>
                             </div>
                         </td>
                         <td>
                             <span class="badge badge-light-{{ $statusBadge }} fw-bold px-3 py-2">
-                                {{ ucfirst($status) }}
+                                {{ ucfirst($invitation->status) }}
                             </span>
                         </td>
-                        <td>{{ \Carbon\Carbon::now()->subDays(rand(1, 30))->format('d M Y') }}</td>
+                        <td>{{ $invitation->created_at->format('d M Y') }}</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="" class="btn btn-sm btn-icon btn-light-primary" data-bs-toggle="tooltip" title="View Invitation">
+                                <a href="{{ route('admin.invitations.show', $invitation) }}" class="btn btn-sm btn-icon btn-light-primary" data-bs-toggle="tooltip" title="View Invitation">
                                     <i class="bi bi-eye fs-2"></i>
                                 </a>
-                                <a href="#" class="btn btn-sm btn-icon btn-light-info" data-bs-toggle="tooltip" title="Edit Invitation">
+                                <a href="{{ route('admin.invitations.edit', $invitation) }}" class="btn btn-sm btn-icon btn-light-info" data-bs-toggle="tooltip" title="Edit Info">
                                     <i class="bi bi-pencil fs-2"></i>
                                 </a>
-                                <a href="#" class="btn btn-sm btn-icon btn-light-success" data-bs-toggle="tooltip" title="Preview">
-                                    <i class="bi bi-file-text fs-2"></i>
+                                <a href="{{ route('admin.invitations.customize-template', $invitation) }}" class="btn btn-sm btn-icon btn-light-primary" data-bs-toggle="tooltip" title="Customize Template">
+                                    <i class="bi bi-palette"></i>
                                 </a>
-                                <button class="btn btn-sm btn-icon btn-light-danger" data-bs-toggle="tooltip" title="Delete" onclick="confirmDelete({{ $i }})">
-                                    <i class="bi bi-trash fs-2"></i>
-                                </button>
+                                <a href="{{ route('admin.invitations.guests.index', $invitation) }}" class="btn btn-sm btn-icon btn-light-success" data-bs-toggle="tooltip" title="Manage Guests">
+                                    <i class="bi bi-people fs-2"></i>
+                                </a>
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-icon btn-light-secondary" data-bs-toggle="dropdown" title="More Actions">
                                         <i class="bi bi-three-dots-vertical"></i>
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-send me-2"></i>Send Invitation</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Export Guest List</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="bi bi-copy me-2"></i>Duplicate</a></li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('invitation.show', $invitation->slug) }}" target="_blank">
+                                                <i class="bi bi-eye me-2"></i>Preview Invitation
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item copy-link" data-link="{{ route('invitation.show', $invitation->slug) }}">
+                                                <i class="bi bi-link me-2"></i>Copy Invitation Link
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('admin.invitations.duplicate', $invitation) }}">
+                                                <i class="bi bi-copy me-2"></i>Duplicate
+                                            </a>
+                                        </li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-archive me-2"></i>Archive</a></li>
+                                        <li>
+                                            <button class="dropdown-item text-danger delete-invitation" 
+                                                    data-id="{{ $invitation->id }}" 
+                                                    data-name="{{ $invitation->groom_full_name }} & {{ $invitation->bride_full_name }}"
+                                                    data-url="{{ route('admin.invitations.destroy', $invitation) }}">
+                                                <i class="bi bi-trash me-2"></i>Delete
+                                            </button>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
                         </td>
                     </tr>
-                    @endfor
+                    @empty
+                    <tr>
+                        <td colspan="8" class="text-center py-8">
+                            <div class="d-flex flex-column align-items-center">
+                                <i class="bi bi-envelope fs-1 text-muted mb-3"></i>
+                                <h5 class="text-muted">No Wedding Invitations Yet</h5>
+                                <p class="text-muted mb-4">Create your first wedding invitation to get started.</p>
+                                <a href="{{ route('admin.templates.select') }}" class="btn btn-primary">
+                                    <i class="bi bi-plus"></i>
+                                    Create Wedding Invitation
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
         <!-- Pagination -->
+        @if($invitations->count() > 0)
         <div class="d-flex flex-wrap justify-content-between align-items-center mt-6">
-            <div class="text-muted">Showing 1 to 10 of 50 wedding invitations</div>
+            <div class="text-muted">
+                Showing {{ $invitations->firstItem() }} to {{ $invitations->lastItem() }} of {{ $invitations->total() }} wedding invitations
+            </div>
             <div class="pagination">
-                <a href="#" class="btn btn-icon btn-light btn-sm me-2">
-                    <i class="bi bi-chevron-left"></i>
-                </a>
-                <a href="#" class="btn btn-icon btn-primary btn-sm me-2">1</a>
-                <a href="#" class="btn btn-icon btn-light btn-sm me-2">2</a>
-                <a href="#" class="btn btn-icon btn-light btn-sm me-2">3</a>
-                <a href="#" class="btn btn-icon btn-light btn-sm">4</a>
-                <a href="#" class="btn btn-icon btn-light btn-sm ms-2">
-                    <i class="bi bi-chevron-right"></i>
-                </a>
+                {{ $invitations->links() }}
             </div>
         </div>
+        @endif
     </div>
 </div>
 
 @push('scripts')
 <script>
     // Search functionality
+    let searchTimeout;
     document.getElementById('searchInput').addEventListener('keyup', function() {
-        let searchText = this.value.toLowerCase();
-        let rows = document.querySelectorAll('#invitationsTableBody tr');
-        
-        rows.forEach(row => {
-            let text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchText) ? '' : 'none';
-        });
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            filterTable();
+        }, 300);
     });
     
     // Filter by status
     document.getElementById('statusFilter').addEventListener('change', function() {
         filterTable();
     });
-
     
     function filterTable() {
-        let status = document.getElementById('statusFilter').value.toLowerCase();
+        let searchText = document.getElementById('searchInput').value.toLowerCase();
+        let status = document.getElementById('statusFilter').value;
+        
         let rows = document.querySelectorAll('#invitationsTableBody tr');
         
+        // Skip if no data rows (empty state)
+        if (rows.length === 1 && rows[0].querySelector('td[colspan]')) {
+            return;
+        }
+        
         rows.forEach(row => {
-            let statusCell = row.cells[5]?.textContent.toLowerCase() || '';
-            let templateCell = row.cells[3]?.textContent.toLowerCase() || '';
-            let dateCell = row.cells[2]?.querySelector('.fw-bold')?.textContent || '';
+            // Skip empty state row
+            if (row.querySelector('td[colspan]')) return;
             
-            let statusMatch = !status || statusCell.includes(status);
-            let templateMatch = !template || templateCell.includes(template);
-            let dateMatch = !date || dateCell.includes(date);
+            let coupleName = row.cells[1]?.querySelector('.fw-bold')?.textContent.toLowerCase() || '';
+            let rowStatus = row.cells[5]?.querySelector('.badge')?.textContent.toLowerCase() || '';
             
-            row.style.display = (statusMatch && templateMatch && dateMatch) ? '' : 'none';
+            let matchesSearch = !searchText || coupleName.includes(searchText);
+            let matchesStatus = !status || rowStatus.includes(status);
+            
+            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
         });
     }
     
@@ -226,32 +248,60 @@
     document.getElementById('resetFilter').addEventListener('click', function() {
         document.getElementById('searchInput').value = '';
         document.getElementById('statusFilter').value = '';
+        
         let rows = document.querySelectorAll('#invitationsTableBody tr');
-        rows.forEach(row => row.style.display = '');
+        rows.forEach(row => {
+            row.style.display = '';
+        });
     });
     
-    // Delete confirmation
-    function confirmDelete(id) {
-        Swal.fire({
-            title: 'Delete Wedding Invitation?',
-            text: "This action cannot be undone. All guest data will be permanently deleted.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Here you would normally make an AJAX call to delete the invitation
-                Swal.fire(
-                    'Deleted!',
-                    'Wedding invitation has been deleted successfully.',
-                    'success'
-                );
-            }
+    // Copy invitation link
+    document.querySelectorAll('.copy-link').forEach(button => {
+        button.addEventListener('click', function() {
+            const link = this.getAttribute('data-link');
+            navigator.clipboard.writeText(link);
+            Swal.fire({
+                icon: 'success',
+                title: 'Copied!',
+                text: 'Invitation link copied to clipboard',
+                timer: 1500,
+                showConfirmButton: false
+            });
         });
-    }
+    });
+    
+    // Delete invitation confirmation
+    document.querySelectorAll('.delete-invitation').forEach(button => {
+        button.addEventListener('click', function() {
+            const invitationId = this.getAttribute('data-id');
+            const invitationName = this.getAttribute('data-name');
+            const deleteUrl = this.getAttribute('data-url'); // Ambil URL dari attribute
+            
+            Swal.fire({
+                title: 'Delete Wedding Invitation?',
+                html: `Are you sure you want to delete <strong>${invitationName}</strong>'s invitation?<br><small class="text-danger">This action cannot be undone. All guest data will be permanently deleted.</small>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create form for delete request
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = deleteUrl;
+                    form.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    });
     
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
