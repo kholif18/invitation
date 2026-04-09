@@ -15,9 +15,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/dashboard', function () {
+// Public invitation viewing routes - Let// Route::get('/dashboard', function () {
 //     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');akkan di luar middleware auth
+Route::get('invitation/{slug}', [InvitationViewController::class, 'show'])->name('invitation.show');
+Route::get('invitation/{slug}/{code}', [InvitationViewController::class, 'show'])->name('invitation.show.withCode');
+Route::post('invitation/{slug}/wish', [InvitationViewController::class, 'sendWish'])->name('invitation.wish');
 
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
@@ -108,10 +111,5 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         Route::put('/', [SettingController::class, 'update'])->name('update');
     });
 });
-
-// Public invitation viewing routes
-Route::get('invitation/{slug}', [InvitationViewController::class, 'show'])->name('invitation.show');
-Route::get('invitation/{slug}/{code}', [InvitationViewController::class, 'show'])->name('invitation.show.withCode');
-Route::post('invitation/{slug}/wish', [InvitationViewController::class, 'sendWish'])->name('invitation.wish');
 
 require __DIR__.'/auth.php';

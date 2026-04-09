@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('wishes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('invitation_id')->constrained()->onDelete('cascade');
+            $table->foreignId('guest_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('guest_name');
+            $table->text('message');
+            $table->enum('attendance', ['yes', 'no', 'maybe'])->default('yes');
+            $table->integer('attendance_count')->default(1);
+            $table->boolean('is_approved')->default(true);
             $table->timestamps();
         });
     }

@@ -48,4 +48,14 @@ class Wish extends Model
     {
         return $query->where('attendance', 'yes');
     }
+
+    public function scopeNotAttending($query)
+    {
+        return $query->where('attendance', 'no');
+    }
+    
+    public function scopeMaybe($query)
+    {
+        return $query->where('attendance', 'maybe');
+    }
 }

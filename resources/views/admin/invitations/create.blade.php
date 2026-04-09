@@ -19,6 +19,21 @@
 @endsection
 
 @section('content')
+@if($errors->any())
+<div class="alert alert-danger mb-6">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill fs-2 me-3"></i>
+        <div>
+            <strong>Terjadi kesalahan!</strong> Silakan periksa kembali form di bawah ini.
+            <ul class="mb-0 mt-2">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+</div>
+@endif
 <form id="invitationForm" method="POST" action="{{ route('admin.invitations.store') }}" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="template_id" value="{{ $template->id }}">
@@ -38,40 +53,58 @@
                     <div class="row mb-6">
                         <div class="col-md-12">
                             <label class="fw-bold mb-2">Upload Foto Mempelai Pria</label>
-                            <input type="file" class="form-control" name="groom_photo" id="groomPhoto" accept="image/*">
-                            <div class="form-text">Format: JPG, PNG, JPEG (Max 5MB)</div>
+                            <input type="file" class="form-control @error('groom_photo') is-invalid @enderror" name="groom_photo" id="groomPhoto" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/bmp">
+                            <div class="form-text">Format: JPG, PNG, JPEG, GIF, WEBP, BMP (Max 5MB)</div>
                             <div id="groomPhotoPreview" class="mt-3" style="display: none;">
                                 <img id="groomPhotoImg" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
                             </div>
+                            @error('groom_photo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     
                     <div class="row mb-6">
                         <div class="col-md-6">
                             <label class="required fw-bold mb-2">Nama Lengkap</label>
-                            <input type="text" class="form-control" name="groom_full_name" placeholder="Nama lengkap mempelai pria">
+                            <input type="text" class="form-control @error('groom_full_name') is-invalid @enderror" name="groom_full_name" placeholder="Nama lengkap mempelai pria">
+                            @error('groom_full_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="required fw-bold mb-2">Nama Panggilan</label>
-                            <input type="text" class="form-control" name="groom_nickname" placeholder="Nama panggilan">
+                            <input type="text" class="form-control @error('groom_nickname') is-invalid @enderror" name="groom_nickname" placeholder="Nama panggilan">
+                            @error('groom_nickname')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     
                     <div class="row mb-6">
                         <div class="col-md-6">
                             <label class="required fw-bold mb-2">Nama Bapak</label>
-                            <input type="text" class="form-control" name="groom_father_name" placeholder="Nama ayah kandung">
+                            <input type="text" class="form-control @error('groom_father_name') is-invalid @enderror" name="groom_father_name" placeholder="Nama ayah kandung">
+                            @error('groom_father_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="required fw-bold mb-2">Nama Ibu</label>
-                            <input type="text" class="form-control" name="groom_mother_name" placeholder="Nama ibu kandung">
+                            <input type="text" class="form-control @error('groom_mother_name') is-invalid @enderror" name="groom_mother_name" placeholder="Nama ibu kandung">
+                            @error('groom_mother_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     
                     <div class="row mb-6">
                         <div class="col-md-12">
                             <label class="required fw-bold mb-2">Alamat</label>
-                            <textarea class="form-control" name="groom_address" rows="3" placeholder="Alamat lengkap mempelai pria"></textarea>
+                            <textarea class="form-control @error('groom_address') is-invalid @enderror" name="groom_address" rows="3" placeholder="Alamat lengkap mempelai pria"></textarea>
+                            @error('groom_address')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -89,40 +122,58 @@
                     <div class="row mb-6">
                         <div class="col-md-12">
                             <label class="fw-bold mb-2">Upload Foto Mempelai Wanita</label>
-                            <input type="file" class="form-control" name="bride_photo" id="bridePhoto" accept="image/*">
-                            <div class="form-text">Format: JPG, PNG, JPEG (Max 5MB)</div>
+                            <input type="file" class="form-control @error('bride_photo') is-invalid @enderror" name="bride_photo" id="bridePhoto" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/bmp">
+                            <div class="form-text">Format: JPG, PNG, JPEG, GIF, WEBP, BMP (Max 5MB)</div>
                             <div id="bridePhotoPreview" class="mt-3" style="display: none;">
                                 <img id="bridePhotoImg" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
                             </div>
+                            @error('bride_photo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     
                     <div class="row mb-6">
                         <div class="col-md-6">
                             <label class="required fw-bold mb-2">Nama Lengkap</label>
-                            <input type="text" class="form-control" name="bride_full_name" placeholder="Nama lengkap mempelai wanita">
+                            <input type="text" class="form-control @error('bride_full_name') is-invalid @enderror" name="bride_full_name" placeholder="Nama lengkap mempelai wanita">
+                            @error('bride_full_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="required fw-bold mb-2">Nama Panggilan</label>
-                            <input type="text" class="form-control" name="bride_nickname" placeholder="Nama panggilan">
+                            <input type="text" class="form-control @error('bride_nickname') is-invalid @enderror" name="bride_nickname" placeholder="Nama panggilan">
+                            @error('bride_nickname')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     
                     <div class="row mb-6">
                         <div class="col-md-6">
                             <label class="required fw-bold mb-2">Nama Bapak</label>
-                            <input type="text" class="form-control" name="bride_father_name" placeholder="Nama ayah kandung">
+                            <input type="text" class="form-control @error('bride_father_name') is-invalid @enderror" name="bride_father_name" placeholder="Nama ayah kandung">
+                            @error('bride_father_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="required fw-bold mb-2">Nama Ibu</label>
-                            <input type="text" class="form-control" name="bride_mother_name" placeholder="Nama ibu kandung">
+                            <input type="text" class="form-control @error('bride_mother_name') is-invalid @enderror" name="bride_mother_name" placeholder="Nama ibu kandung">
+                            @error('bride_mother_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     
                     <div class="row mb-6">
                         <div class="col-md-12">
                             <label class="required fw-bold mb-2">Alamat</label>
-                            <textarea class="form-control" name="bride_address" rows="3" placeholder="Alamat lengkap mempelai wanita"></textarea>
+                            <textarea class="form-control @error('bride_address') is-invalid @enderror" name="bride_address" rows="3" placeholder="Alamat lengkap mempelai wanita"></textarea>
+                            @error('bride_address')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -235,11 +286,16 @@
                     <div class="row mb-6">
                         <div class="col-md-12">
                             <label class="fw-bold mb-2">Upload Gift Image</label>
-                            <input type="file" class="form-control" name="gift_image" id="giftImage" accept="image/*">
-                            <div class="form-text">Format: JPG, PNG, JPEG (Max 5MB)</div>
+                            <input type="file" class="form-control @error('gift_image') is-invalid @enderror" 
+                                name="gift_image" id="giftImage" 
+                                accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/bmp">
+                            <div class="form-text">Format: JPG, PNG, JPEG, GIF, WEBP, BMP (Max 5MB)</div>
                             <div id="giftImagePreview" class="mt-3" style="display: none;">
                                 <img id="giftImageImg" class="img-fluid rounded" style="max-height: 150px; object-fit: cover;">
                             </div>
+                            @error('gift_image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     
@@ -287,16 +343,26 @@
                 <div class="card-body">
                     <div class="mb-6">
                         <label class="fw-bold mb-2">Upload Photos</label>
-                        <input type="file" class="form-control" name="gallery_photos[]" id="galleryPhotos" accept="image/*" multiple>
-                        <div class="form-text">You can select multiple photos (Max 10MB each)</div>
+                        <input type="file" class="form-control @error('gallery_photos.*') is-invalid @enderror" 
+                            name="gallery_photos[]" id="galleryPhotos" 
+                            accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/bmp" multiple>
+                        <div class="form-text">Format: JPG, PNG, JPEG, GIF, WEBP, BMP (Max 10MB each)</div>
                         <div id="galleryPhotosPreview" class="row g-3 mt-3"></div>
+                        @error('gallery_photos.*')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
                     
                     <div class="mb-6">
                         <label class="fw-bold mb-2">Upload Videos</label>
-                        <input type="file" class="form-control" name="gallery_videos[]" id="galleryVideos" accept="video/*" multiple>
-                        <div class="form-text">You can select multiple videos (Max 200MB each)</div>
+                        <input type="file" class="form-control @error('gallery_videos.*') is-invalid @enderror" 
+                            name="gallery_videos[]" id="galleryVideos" 
+                            accept="video/mp4,video/mpeg,video/quicktime,video/avi,video/mov,video/wmv,video/flv" multiple>
+                        <div class="form-text">Format: MP4, MPEG, MOV, AVI, WMV, FLV (Max 200MB each)</div>
                         <div id="galleryVideosPreview" class="row g-3 mt-3"></div>
+                        @error('gallery_videos.*')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -377,10 +443,27 @@
     let mapCounter = 1;
     let bankAccountCounter = 1;
     
-    // Preview for Groom Photo
+    // Preview for Groom Photo dengan validasi
     document.getElementById('groomPhoto').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if(file) {
+            // Validasi tipe file
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/bmp'];
+            if (!allowedTypes.includes(file.type)) {
+                Swal.fire('Error', 'Format file tidak didukung. Gunakan: JPG, PNG, JPEG, GIF, WEBP, BMP', 'error');
+                this.value = '';
+                document.getElementById('groomPhotoPreview').style.display = 'none';
+                return;
+            }
+            
+            // Validasi ukuran file (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire('Error', 'Ukuran file maksimal 5MB', 'error');
+                this.value = '';
+                document.getElementById('groomPhotoPreview').style.display = 'none';
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(event) {
                 const preview = document.getElementById('groomPhotoPreview');
@@ -393,11 +476,26 @@
             document.getElementById('groomPhotoPreview').style.display = 'none';
         }
     });
-    
-    // Preview for Bride Photo
+
+    // Preview untuk Bride Photo dengan validasi
     document.getElementById('bridePhoto').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if(file) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/bmp'];
+            if (!allowedTypes.includes(file.type)) {
+                Swal.fire('Error', 'Format file tidak didukung. Gunakan: JPG, PNG, JPEG, GIF, WEBP, BMP', 'error');
+                this.value = '';
+                document.getElementById('bridePhotoPreview').style.display = 'none';
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire('Error', 'Ukuran file maksimal 5MB', 'error');
+                this.value = '';
+                document.getElementById('bridePhotoPreview').style.display = 'none';
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(event) {
                 const preview = document.getElementById('bridePhotoPreview');
@@ -410,11 +508,26 @@
             document.getElementById('bridePhotoPreview').style.display = 'none';
         }
     });
-    
-    // Preview for Gift Image
+
+    // Preview untuk Gift Image dengan validasi
     document.getElementById('giftImage').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if(file) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/bmp'];
+            if (!allowedTypes.includes(file.type)) {
+                Swal.fire('Error', 'Format file tidak didukung. Gunakan: JPG, PNG, JPEG, GIF, WEBP, BMP', 'error');
+                this.value = '';
+                document.getElementById('giftImagePreview').style.display = 'none';
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire('Error', 'Ukuran file maksimal 5MB', 'error');
+                this.value = '';
+                document.getElementById('giftImagePreview').style.display = 'none';
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(event) {
                 const preview = document.getElementById('giftImagePreview');
@@ -428,12 +541,34 @@
         }
     });
     
-    // Preview for Gallery Photos (multiple)
+    // Preview for Gallery Photos (multiple) dengan validasi
     document.getElementById('galleryPhotos').addEventListener('change', function(e) {
         const preview = document.getElementById('galleryPhotosPreview');
         preview.innerHTML = '';
+        const files = Array.from(e.target.files);
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/bmp'];
+        let hasError = false;
         
-        Array.from(e.target.files).forEach((file, index) => {
+        for (let file of files) {
+            if (!allowedTypes.includes(file.type)) {
+                Swal.fire('Error', `File "${file.name}" format tidak didukung. Gunakan: JPG, PNG, JPEG, GIF, WEBP, BMP`, 'error');
+                hasError = true;
+                break;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) {
+                Swal.fire('Error', `File "${file.name}" ukuran melebihi 10MB`, 'error');
+                hasError = true;
+                break;
+            }
+        }
+        
+        if (hasError) {
+            this.value = '';
+            return;
+        }
+        
+        files.forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function(event) {
                 const col = document.createElement('div');
@@ -442,22 +577,9 @@
                     <div class="position-relative">
                         <img src="${event.target.result}" class="img-fluid rounded" style="height: 150px; width: 100%; object-fit: cover;">
                         <span class="badge badge-primary position-absolute top-0 end-0 m-1">${index + 1}</span>
-                        <button type="button" class="btn btn-sm btn-danger position-absolute bottom-0 end-0 m-1 remove-photo-btn" data-index="${index}" style="display: none;">
-                            <i class="bi bi-trash"></i>
-                        </button>
                     </div>
                 `;
                 preview.appendChild(col);
-                
-                // Add hover effect to show remove button
-                col.addEventListener('mouseenter', function() {
-                    const removeBtn = this.querySelector('.remove-photo-btn');
-                    if(removeBtn) removeBtn.style.display = 'block';
-                });
-                col.addEventListener('mouseleave', function() {
-                    const removeBtn = this.querySelector('.remove-photo-btn');
-                    if(removeBtn) removeBtn.style.display = 'none';
-                });
             };
             reader.readAsDataURL(file);
         });

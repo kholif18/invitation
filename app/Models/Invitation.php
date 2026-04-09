@@ -94,6 +94,16 @@ class Invitation extends Model
         return $this->hasMany(Wish::class);
     }
 
+    public function getWishesCountAttribute()
+    {
+        return $this->wishes()->count();
+    }
+
+    public function getApprovedWishesCountAttribute()
+    {
+        return $this->wishes()->approved()->count();
+    }
+
     // Accessors
     public function getFullTitleAttribute()
     {

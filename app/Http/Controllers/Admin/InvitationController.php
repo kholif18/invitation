@@ -350,33 +350,112 @@ class InvitationController extends Controller
             'bride_father_name' => 'required|string|max:255',
             'bride_mother_name' => 'required|string|max:255',
             'bride_address' => 'required|string',
-            'groom_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-            'bride_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-            'gift_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-            'gallery_photos.*' => 'nullable|image|mimes:jpeg,png,jpg|max:10240',
-            'gallery_videos.*' => 'nullable|mimetypes:video/mp4,video/mpeg,video/quicktime|max:204800',
             'status' => 'required|in:draft,published',
         ];
         
-        // Conditional validation for Akad Nikah - jika ada data akad
-        if ($request->filled('akad_date') || $request->filled('akad_location')) {
+        // Custom error messages
+        $messages = [
+            // Required field messages
+            'template_id.required' => 'Template harus dipilih.',
+            'template_id.exists' => 'Template yang dipilih tidak valid.',
+            'groom_full_name.required' => 'Nama lengkap mempelai pria wajib diisi.',
+            'groom_nickname.required' => 'Nama panggilan mempelai pria wajib diisi.',
+            'groom_father_name.required' => 'Nama ayah mempelai pria wajib diisi.',
+            'groom_mother_name.required' => 'Nama ibu mempelai pria wajib diisi.',
+            'groom_address.required' => 'Alamat mempelai pria wajib diisi.',
+            'bride_full_name.required' => 'Nama lengkap mempelai wanita wajib diisi.',
+            'bride_nickname.required' => 'Nama panggilan mempelai wanita wajib diisi.',
+            'bride_father_name.required' => 'Nama ayah mempelai wanita wajib diisi.',
+            'bride_mother_name.required' => 'Nama ibu mempelai wanita wajib diisi.',
+            'bride_address.required' => 'Alamat mempelai wanita wajib diisi.',
+            'status.required' => 'Status invitation wajib dipilih.',
+            'status.in' => 'Status invitation tidak valid.',
+            
+            // File validation messages
+            'groom_photo.image' => 'File foto mempelai pria harus berupa gambar.',
+            'groom_photo.mimes' => 'Format foto mempelai pria harus: jpeg, png, jpg, gif, webp, bmp.',
+            'groom_photo.max' => 'Ukuran foto mempelai pria maksimal 5MB.',
+            'groom_photo.file' => 'File foto mempelai pria tidak valid.',
+            
+            'bride_photo.image' => 'File foto mempelai wanita harus berupa gambar.',
+            'bride_photo.mimes' => 'Format foto mempelai wanita harus: jpeg, png, jpg, gif, webp, bmp.',
+            'bride_photo.max' => 'Ukuran foto mempelai wanita maksimal 5MB.',
+            'bride_photo.file' => 'File foto mempelai wanita tidak valid.',
+            
+            'gift_image.image' => 'File gambar gift harus berupa gambar.',
+            'gift_image.mimes' => 'Format gambar gift harus: jpeg, png, jpg, gif, webp, bmp.',
+            'gift_image.max' => 'Ukuran gambar gift maksimal 5MB.',
+            'gift_image.file' => 'File gambar gift tidak valid.',
+            
+            'gallery_photos.*.image' => 'File gallery harus berupa gambar.',
+            'gallery_photos.*.mimes' => 'Format gambar gallery harus: jpeg, png, jpg, gif, webp, bmp.',
+            'gallery_photos.*.max' => 'Ukuran gambar gallery maksimal 10MB per file.',
+            'gallery_photos.*.file' => 'File gallery tidak valid.',
+            
+            'gallery_videos.*.mimetypes' => 'Format video gallery harus: mp4, mpeg, quicktime.',
+            'gallery_videos.*.max' => 'Ukuran video gallery maksimal 200MB per file.',
+            
+            // Akad validation messages
+            'akad_date.required' => 'Tanggal akad nikah wajib diisi.',
+            'akad_date.date' => 'Format tanggal akad nikah tidak valid.',
+            'akad_time.required' => 'Jam akad nikah wajib diisi.',
+            'akad_location.required' => 'Lokasi akad nikah wajib diisi.',
+            
+            // Reception validation messages
+            'receptions.*.name.required' => 'Nama resepsi wajib diisi.',
+            'receptions.*.date.required' => 'Tanggal resepsi wajib diisi.',
+            'receptions.*.date.date' => 'Format tanggal resepsi tidak valid.',
+            'receptions.*.location.required' => 'Lokasi resepsi wajib diisi.',
+        ];
+        
+        // File validations dengan format gambar yang lebih lengkap
+        $imageMimes = 'jpeg,png,jpg,gif,webp,bmp,svg';
+        $imageMaxSize = '5120'; // 5MB
+        $galleryImageMaxSize = '10240'; // 10MB
+        $videoMaxSize = '204800'; // 200MB
+        $videoMimes = 'mp4,mpeg,quicktime,avi,mov,wmv,flv';
+        
+        if ($request->hasFile('groom_photo')) {
+            $rules['groom_photo'] = 'nullable|image|mimes:' . $imageMimes . '|max:' . $imageMaxSize . '|file';
+        }
+        
+        if ($request->hasFile('bride_photo')) {
+            $rules['bride_photo'] = 'nullable|image|mimes:' . $imageMimes . '|max:' . $imageMaxSize . '|file';
+        }
+        
+        if ($request->hasFile('gift_image')) {
+            $rules['gift_image'] = 'nullable|image|mimes:' . $imageMimes . '|max:' . $imageMaxSize . '|file';
+        }
+        
+        if ($request->hasFile('gallery_photos')) {
+            $rules['gallery_photos.*'] = 'nullable|image|mimes:' . $imageMimes . '|max:' . $galleryImageMaxSize . '|file';
+        }
+        
+        if ($request->hasFile('gallery_videos')) {
+            $rules['gallery_videos.*'] = 'nullable|mimetypes:video/' . str_replace(',', ',video/', $videoMimes) . '|max:' . $videoMaxSize . '|file';
+        }
+        
+        // Conditional validation for Akad Nikah
+        if ($request->has('akadNikahToggle') && $request->input('akadNikahToggle') == '1') {
             $rules['akad_date'] = 'required|date';
             $rules['akad_time'] = 'required';
             $rules['akad_location'] = 'required|string';
         }
         
-        // Conditional validation for Reception - jika ada data reception
-        if ($request->has('receptions') && is_array($request->receptions)) {
-            foreach ($request->receptions as $key => $reception) {
-                if (isset($reception['name']) || isset($reception['date']) || isset($reception['location'])) {
-                    $rules["receptions.{$key}.name"] = 'required|string';
-                    $rules["receptions.{$key}.date"] = 'required|date';
-                    $rules["receptions.{$key}.location"] = 'required|string';
+        // Conditional validation for Reception
+        if ($request->has('resepsiToggle') && $request->input('resepsiToggle') == '1') {
+            if ($request->has('receptions') && is_array($request->receptions)) {
+                foreach ($request->receptions as $key => $reception) {
+                    if (isset($reception['name']) || isset($reception['date']) || isset($reception['location'])) {
+                        $rules["receptions.{$key}.name"] = 'required|string';
+                        $rules["receptions.{$key}.date"] = 'required|date';
+                        $rules["receptions.{$key}.location"] = 'required|string';
+                    }
                 }
             }
         }
         
-        return $request->validate($rules);
+        return $request->validate($rules, $messages);
     }
 
     private function uploadFile(Request $request, $fieldName, $directory)
