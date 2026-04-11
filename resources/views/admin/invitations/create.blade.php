@@ -430,9 +430,11 @@
             <i class="bi bi-save"></i>
             Save as Draft
         </button>
-        <button type="button" class="btn btn-primary" id="sendInvitationBtn">
-            <i class="bi bi-send"></i>
-            Send Invitation
+        <button type="button" class="btn btn-success" id="publishBtn">
+            <i class="bi bi-globe"></i> Publish Invitation
+        </button>
+        <button type="button" class="btn btn-primary" id="createAndPublishBtn">
+            <i class="bi bi-send"></i> Create & Publish
         </button>
     </div>
 </form>
@@ -799,7 +801,7 @@
         return true;
     }
     
-   // Fix the submit buttons
+    // Fix the submit buttons
     document.getElementById('saveDraftBtn').onclick = function(e) {
         e.preventDefault();
         if(validateWeddingForm()) {
@@ -808,7 +810,15 @@
         }
     }
 
-    document.getElementById('sendInvitationBtn').onclick = function(e) {
+    document.getElementById('publishBtn').onclick = function(e) {
+        e.preventDefault();
+        if(validateWeddingForm()) {
+            document.getElementById('statusInput').value = 'published';
+            document.getElementById('invitationForm').submit();
+        }
+    }
+
+    document.getElementById('createAndPublishBtn').onclick = function(e) {
         e.preventDefault();
         if(validateWeddingForm()) {
             document.getElementById('statusInput').value = 'published';

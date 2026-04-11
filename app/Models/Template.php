@@ -18,7 +18,6 @@ class Template extends Model
         'name',
         'slug',
         'thumbnail',
-        'preview_image',
         'category',
         'description',
         'blade_file',
@@ -80,11 +79,50 @@ class Template extends Model
 
     public function getThumbnailUrlAttribute()
     {
+        // PRIORITAS 1: Thumbnail dari folder template (bawaan sistem)
+        $templateThumbnail = $this->getTemplateThumbnailFromAssets();
+        if ($templateThumbnail) {
+            return $templateThumbnail;
+        }
+        
+        // PRIORITAS 2: Thumbnail yang diupload via form (storage)
         if ($this->thumbnail && Storage::disk('public')->exists($this->thumbnail)) {
             return Storage::url($this->thumbnail);
         }
         
-        // Default thumbnails berdasarkan kategori - menggunakan folder assets/templates/defaults/
+        // PRIORITAS 3: Default thumbnail berdasarkan kategori (fallback)
+        return $this->getDefaultThumbnailByCategory();
+    }
+
+    /**
+     * Cari thumbnail di folder template assets (untuk template bawaan sistem)
+     */
+    private function getTemplateThumbnailFromAssets()
+    {
+        // List kemungkinan lokasi thumbnail di folder template
+        $possiblePaths = [
+            "assets/templates/{$this->slug}/images/thumbnail.jpg",
+            "assets/templates/{$this->slug}/images/thumbnail.png",
+            "assets/templates/{$this->slug}/thumbnail.jpg",
+            "assets/templates/{$this->slug}/thumbnail.png",
+            "assets/templates/{$this->slug}/images/thumb.jpg",
+            "assets/templates/{$this->slug}/screenshot.jpg",
+        ];
+        
+        foreach ($possiblePaths as $path) {
+            if (file_exists(public_path($path))) {
+                return asset($path);
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Get default thumbnail based on category (fallback terakhir)
+     */
+    private function getDefaultThumbnailByCategory()
+    {
         $defaultThumbnails = [
             'classic' => '/assets/templates/defaults/thumbnails/classic.jpg',
             'modern' => '/assets/templates/defaults/thumbnails/modern.jpg',
@@ -96,37 +134,11 @@ class Template extends Model
         
         $thumbnailPath = $defaultThumbnails[$this->category] ?? $defaultThumbnails['default'];
         
-        // Cek apakah file default thumbnail benar-benar ada
         if (!file_exists(public_path($thumbnailPath))) {
-            // Fallback ke placeholder menggunakan service seperti placehold.co
-            return 'https://placehold.co/600x400/FFD700/FFFFFF?text=' . urlencode($this->name ?? 'Template');
+            return 'https://placehold.co/600x400/F0F0F0/999999?text=' . urlencode($this->name ?? 'Template');
         }
         
         return asset($thumbnailPath);
-    }
-
-    public function getPreviewUrlAttribute()
-    {
-        if ($this->preview_image && Storage::disk('public')->exists($this->preview_image)) {
-            return Storage::url($this->preview_image);
-        }
-        
-        // Default preview berdasarkan kategori
-        $defaultPreviews = [
-            'classic' => '/assets/templates/defaults/previews/classic-preview.jpg',
-            'modern' => '/assets/templates/defaults/previews/modern-preview.jpg',
-            'minimalist' => '/assets/templates/defaults/previews/minimalist-preview.jpg',
-            'elegant' => '/assets/templates/defaults/previews/elegant-preview.jpg',
-            'default' => '/assets/templates/defaults/previews/default-preview.jpg',
-        ];
-        
-        $previewPath = $defaultPreviews[$this->category] ?? $defaultPreviews['default'];
-        
-        if (!file_exists(public_path($previewPath))) {
-            return $this->thumbnail_url; // Gunakan thumbnail jika preview tidak ada
-        }
-        
-        return asset($previewPath);
     }
 
     public function getConfigArrayAttribute()

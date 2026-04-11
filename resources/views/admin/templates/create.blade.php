@@ -78,7 +78,7 @@
             </div>
             
             <div class="row mb-6">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <label class="fw-bold mb-2">Thumbnail Image</label>
                     <input type="file" class="form-control @error('thumbnail') is-invalid @enderror" 
                            name="thumbnail" accept="image/*" id="thumbnailInput">
@@ -87,18 +87,6 @@
                         <img id="thumbnailImg" class="img-fluid rounded" style="max-height: 150px;">
                     </div>
                     @error('thumbnail')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="col-md-6">
-                    <label class="fw-bold mb-2">Preview Image</label>
-                    <input type="file" class="form-control @error('preview_image') is-invalid @enderror" 
-                           name="preview_image" accept="image/*" id="previewImageInput">
-                    <div class="form-text">Full preview image (Max 5MB)</div>
-                    <div id="previewImagePreview" class="mt-3" style="display: none;">
-                        <img id="previewImageImg" class="img-fluid rounded" style="max-height: 150px;">
-                    </div>
-                    @error('preview_image')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -210,21 +198,6 @@
             reader.onload = function(event) {
                 const preview = document.getElementById('thumbnailPreview');
                 const img = document.getElementById('thumbnailImg');
-                img.src = event.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    
-    // Preview image preview
-    document.getElementById('previewImageInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if(file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const preview = document.getElementById('previewImagePreview');
-                const img = document.getElementById('previewImageImg');
                 img.src = event.target.result;
                 preview.style.display = 'block';
             };

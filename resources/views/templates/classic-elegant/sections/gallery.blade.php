@@ -5,10 +5,10 @@
     
     // Dummy images for preview
     $dummyImages = [
-        asset('assets/templates/classic-elegant/images/dummy/gallery-1.jpg'),
-        asset('assets/templates/classic-elegant/images/dummy/gallery-2.jpg'),
-        asset('assets/templates/classic-elegant/images/dummy/gallery-3.jpg'),
-        asset('assets/templates/classic-elegant/images/dummy/gallery-4.jpg'),
+        asset('assets/templates/classic-elegant/images/gallery-1.jpg'),
+        asset('assets/templates/classic-elegant/images/gallery-2.jpg'),
+        asset('assets/templates/classic-elegant/images/gallery-3.jpg'),
+        asset('assets/templates/classic-elegant/images/gallery-4.jpg'),
     ];
     
     // Gunakan dummy images untuk preview atau real images

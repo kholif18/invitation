@@ -27,7 +27,7 @@
         </div>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.templates.update', $template) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.templates.update', $template->slug) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             
@@ -68,7 +68,7 @@
             </div>
             
             <div class="row mb-6">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <label class="fw-bold mb-2">Thumbnail Image</label>
                     @if($template->thumbnail)
                         <div class="mb-2">
@@ -79,20 +79,6 @@
                            name="thumbnail" accept="image/*">
                     <div class="form-text">Leave empty to keep current thumbnail (Max 2MB)</div>
                     @error('thumbnail')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="col-md-6">
-                    <label class="fw-bold mb-2">Preview Image</label>
-                    @if($template->preview_image)
-                        <div class="mb-2">
-                            <img src="{{ $template->preview_url }}" class="img-fluid rounded" style="max-height: 100px;">
-                        </div>
-                    @endif
-                    <input type="file" class="form-control @error('preview_image') is-invalid @enderror" 
-                           name="preview_image" accept="image/*">
-                    <div class="form-text">Leave empty to keep current preview image (Max 5MB)</div>
-                    @error('preview_image')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

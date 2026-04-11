@@ -32,7 +32,6 @@ class TemplateController extends Controller
             'category' => 'required|string|max:100',
             'description' => 'nullable|string',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'preview_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
             'template_zip' => 'required|file|mimes:zip|max:51200', // Max 50MB
             'version' => 'required|string|max:50',
             'author' => 'nullable|string|max:255',
@@ -46,10 +45,6 @@ class TemplateController extends Controller
             // Handle file uploads
             if ($request->hasFile('thumbnail')) {
                 $validated['thumbnail'] = $request->file('thumbnail')->store('templates/thumbnails', 'public');
-            }
-            
-            if ($request->hasFile('preview_image')) {
-                $validated['preview_image'] = $request->file('preview_image')->store('templates/previews', 'public');
             }
             
             // Extract and process template zip
@@ -147,7 +142,6 @@ class TemplateController extends Controller
             'category' => 'required|string|max:100',
             'description' => 'nullable|string',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'preview_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
             'version' => 'required|string|max:50',
             'author' => 'nullable|string|max:255',
             'author_url' => 'nullable|url|max:255',
@@ -162,13 +156,6 @@ class TemplateController extends Controller
                 Storage::disk('public')->delete($template->thumbnail);
             }
             $validated['thumbnail'] = $request->file('thumbnail')->store('templates/thumbnails', 'public');
-        }
-        
-        if ($request->hasFile('preview_image')) {
-            if ($template->preview_image) {
-                Storage::disk('public')->delete($template->preview_image);
-            }
-            $validated['preview_image'] = $request->file('preview_image')->store('templates/previews', 'public');
         }
         
         // Parse config if provided
@@ -208,10 +195,6 @@ class TemplateController extends Controller
         if ($template->thumbnail) {
             Storage::disk('public')->delete($template->thumbnail);
         }
-        if ($template->preview_image) {
-            Storage::disk('public')->delete($template->preview_image);
-        }
-        
         $template->delete();
         
         return redirect()->route('admin.templates.index')

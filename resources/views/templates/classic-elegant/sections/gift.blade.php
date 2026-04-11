@@ -17,7 +17,7 @@
                 @if($invitation->gift_image)
                     <img src="{{ asset('storage/' . $invitation->gift_image) }}" alt="Wedding Gift" class="img-fluid rounded">
                 @elseif(isset($isPreview) && $isPreview)
-                    <img src="{{ asset('assets/templates/classic-elegant/images/dummy/gift-placeholder.jpg') }}" alt="Gift Preview" class="img-fluid rounded" style="max-height: 200px;">
+                    <img src="{{ asset('assets/templates/classic-elegant/images/gift-placeholder.jpg') }}" alt="Gift Preview" class="img-fluid rounded" style="max-height: 200px;">
                 @endif
             </div>
             

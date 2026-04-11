@@ -25,15 +25,15 @@ class InvitationController extends Controller
     public function create(Request $request)
     {
         // Check if template is selected
-        $templateId = $request->query('template');
+        $templateSlug = $request->query('template');
         
-        if (!$templateId) {
+        if (!$templateSlug) {
             // Redirect to template selection page
             return redirect()->route('admin.templates.select')
                 ->with('info', 'Please select a template first.');
         }
         
-        $template = Template::where('id', $templateId)
+        $template = Template::where('slug', $templateSlug)
             ->where('is_active', true)
             ->firstOrFail();
         
@@ -170,56 +170,113 @@ class InvitationController extends Controller
         DB::beginTransaction();
         
         try {
-            // Handle file uploads (only if new files are provided)
+            // ==================== HANDLE REMOVE EXISTING PHOTOS ====================
+            // Handle remove groom photo
+            if ($request->has('remove_groom_photo')) {
+                $this->deleteFile($invitation->groom_photo);
+                $validated['groom_photo'] = null;
+            }
+            
+            // Handle remove bride photo
+            if ($request->has('remove_bride_photo')) {
+                $this->deleteFile($invitation->bride_photo);
+                $validated['bride_photo'] = null;
+            }
+            
+            // Handle remove gift image
+            if ($request->has('remove_gift_image')) {
+                $this->deleteFile($invitation->gift_image);
+                $validated['gift_image'] = null;
+            }
+            
+            // ==================== HANDLE NEW FILE UPLOADS ====================
+            // Handle new groom photo upload
             if ($request->hasFile('groom_photo')) {
                 $this->deleteFile($invitation->groom_photo);
                 $validated['groom_photo'] = $this->uploadFile($request, 'groom_photo', 'invitations/groom');
             }
             
+            // Handle new bride photo upload
             if ($request->hasFile('bride_photo')) {
                 $this->deleteFile($invitation->bride_photo);
                 $validated['bride_photo'] = $this->uploadFile($request, 'bride_photo', 'invitations/bride');
             }
             
+            // Handle new gift image upload
             if ($request->hasFile('gift_image')) {
                 $this->deleteFile($invitation->gift_image);
                 $validated['gift_image'] = $this->uploadFile($request, 'gift_image', 'invitations/gift');
             }
             
-            // Handle gallery updates
+            // ==================== HANDLE REMOVE EXISTING GALLERY ITEMS ====================
+            // Handle remove existing gallery photos
+            if ($request->has('remove_gallery_photos')) {
+                $existingPhotos = $invitation->gallery_photos ?? [];
+                $remainingPhotos = array_diff($existingPhotos, $request->remove_gallery_photos);
+                foreach ($request->remove_gallery_photos as $photo) {
+                    $this->deleteFile($photo);
+                }
+                $validated['gallery_photos'] = array_values($remainingPhotos);
+            } else {
+                $validated['gallery_photos'] = $invitation->gallery_photos ?? [];
+            }
+            
+            // Handle remove existing gallery videos
+            if ($request->has('remove_gallery_videos')) {
+                $existingVideos = $invitation->gallery_videos ?? [];
+                $remainingVideos = array_diff($existingVideos, $request->remove_gallery_videos);
+                foreach ($request->remove_gallery_videos as $video) {
+                    $this->deleteFile($video);
+                }
+                $validated['gallery_videos'] = array_values($remainingVideos);
+            } else {
+                $validated['gallery_videos'] = $invitation->gallery_videos ?? [];
+            }
+            
+            // ==================== HANDLE NEW GALLERY UPLOADS ====================
+            // Handle new gallery photos upload (append to existing)
             if ($request->hasFile('gallery_photos')) {
-                $this->deleteMultipleFiles($invitation->gallery_photos);
-                $validated['gallery_photos'] = $this->uploadMultipleFiles($request->file('gallery_photos'), 'invitations/gallery/photos');
+                $newPhotos = $this->uploadMultipleFiles($request->file('gallery_photos'), 'invitations/gallery/photos');
+                $existingPhotos = $validated['gallery_photos'] ?? [];
+                $validated['gallery_photos'] = array_merge($existingPhotos, $newPhotos);
             }
             
+            // Handle new gallery videos upload (append to existing)
             if ($request->hasFile('gallery_videos')) {
-                $this->deleteMultipleFiles($invitation->gallery_videos);
-                $validated['gallery_videos'] = $this->uploadMultipleFiles($request->file('gallery_videos'), 'invitations/gallery/videos');
+                $newVideos = $this->uploadMultipleFiles($request->file('gallery_videos'), 'invitations/gallery/videos');
+                $existingVideos = $validated['gallery_videos'] ?? [];
+                $validated['gallery_videos'] = array_merge($existingVideos, $newVideos);
             }
             
-            // Set boolean flags
+            // ==================== SET BOOLEAN FLAGS ====================
             $validated['has_akad'] = $request->has('akadNikahToggle');
             $validated['has_reception'] = $request->has('resepsiToggle');
             $validated['has_gift'] = $request->has('giftToggle');
             $validated['has_gallery'] = $request->has('galleryToggle');
             $validated['is_wish_active'] = $request->has('is_wish_active');
             
-            // Process receptions
+            // ==================== PROCESS RECEPTIONS ====================
             if ($request->has('receptions')) {
                 $validated['receptions'] = array_values($request->receptions);
+            } else {
+                $validated['receptions'] = null;
             }
             
-            // Process maps
+            // ==================== PROCESS MAPS ====================
             if ($request->has('maps')) {
                 $validated['maps'] = array_values(array_filter($request->maps));
+            } else {
+                $validated['maps'] = null;
             }
             
-            // Process bank accounts
+            // ==================== PROCESS BANK ACCOUNTS ====================
             if ($request->has('bank_accounts')) {
                 $validated['bank_accounts'] = array_values($request->bank_accounts);
+            } else {
+                $validated['bank_accounts'] = null;
             }
             
-            // Update invitation
+            // ==================== UPDATE INVITATION ====================
             $invitation->update($validated);
             
             DB::commit();
@@ -233,7 +290,9 @@ class InvitationController extends Controller
                 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to update invitation: ' . $e->getMessage());
+            Log::error('Failed to update invitation: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return back()->with('error', 'Failed to update invitation: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -260,6 +319,22 @@ class InvitationController extends Controller
             DB::rollBack();
             return back()->with('error', 'Failed to delete invitation: ' . $e->getMessage());
         }
+    }
+
+    public function publish(Invitation $invitation)
+    {
+        $invitation->update(['status' => 'published']);
+        
+        return redirect()->route('admin.invitations.show', $invitation)
+            ->with('success', 'Invitation published successfully! It is now publicly accessible.');
+    }
+
+    public function unpublish(Invitation $invitation)
+    {
+        $invitation->update(['status' => 'draft']);
+        
+        return redirect()->route('admin.invitations.show', $invitation)
+            ->with('success', 'Invitation unpublished successfully! It is now hidden from public.');
     }
 
     public function duplicate(Invitation $invitation)

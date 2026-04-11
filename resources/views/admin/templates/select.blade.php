@@ -20,14 +20,18 @@
     @forelse($templates as $template)
     <div class="col-xl-3 col-md-4 col-sm-6">
         <div class="card h-100 template-card @if($template->is_default) border-primary @endif">
-            <div class="card-header p-0">
-                <div class="position-relative">
-                    <img src="{{ $template->thumbnail_url }}" class="card-img-top" alt="{{ $template->name }}" style="height: 250px; object-fit: cover;">
+            <div class="position-relative">
+                <img src="{{ $template->thumbnail_url }}" 
+                    class="card-img-top" 
+                    alt="{{ $template->name }}" 
+                    style="height: 200px; object-fit: cover;"
+                    onerror="this.onerror=null; this.src='https://placehold.co/600x400/F0F0F0/999999?text={{ urlencode($template->name) }}';">
+                <div class="position-absolute top-0 end-0 m-2">
                     @if($template->is_default)
-                        <span class="badge badge-primary position-absolute top-0 end-0 m-2">Default</span>
+                        <span class="badge badge-primary">Default</span>
                     @endif
                     @if(!$template->is_active)
-                        <span class="badge badge-secondary position-absolute top-0 start-0 m-2">Inactive</span>
+                        <span class="badge badge-secondary">Inactive</span>
                     @endif
                 </div>
             </div>
@@ -41,11 +45,11 @@
                 </div>
                 
                 <div class="mt-3 d-flex gap-2">
-                    <a href="{{ route('admin.templates.preview', $template) }}" class="btn btn-sm btn-light flex-fill" target="_blank">
+                    <a href="{{ route('admin.templates.preview', $template->slug) }}" class="btn btn-sm btn-light flex-fill" target="_blank">
                         <i class="bi bi-eye"></i> Preview
                     </a>
                     @if($template->is_active)
-                    <a href="{{ route('admin.invitations.create', ['template' => $template->id]) }}" class="btn btn-sm btn-primary flex-fill">
+                    <a href="{{ route('admin.invitations.create', ['template' => $template->slug]) }}" class="btn btn-sm btn-primary flex-fill">
                         <i class="bi bi-plus-circle"></i> Select
                     </a>
                     @else

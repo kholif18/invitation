@@ -26,18 +26,28 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
 
     // Template management
+    Route::get('templates', [TemplateController::class, 'index'])->name('templates.index');
+    Route::get('templates/create', [TemplateController::class, 'create'])->name('templates.create');
+    Route::post('templates', [TemplateController::class, 'store'])->name('templates.store');
     Route::get('templates/select', [TemplateController::class, 'select'])->name('templates.select');
-    Route::post('templates/{template}/set-default', [TemplateController::class, 'setDefault'])->name('templates.set-default');
-    Route::get('templates/{template}/preview', [TemplateController::class, 'preview'])->name('templates.preview');
-    Route::get('templates/{template}/preview-iframe', [TemplateController::class, 'previewIframe'])->name('templates.preview-iframe');
-    Route::get('templates/{template}/download', [TemplateController::class, 'download'])->name('templates.download');
-    Route::resource('templates', TemplateController::class);
+    Route::get('templates/{template:slug}', [TemplateController::class, 'show'])->name('templates.show');
+    Route::get('templates/{template:slug}/edit', [TemplateController::class, 'edit'])->name('templates.edit');
+    Route::put('templates/{template:slug}', [TemplateController::class, 'update'])->name('templates.update');
+    Route::delete('templates/{template:slug}', [TemplateController::class, 'destroy'])->name('templates.destroy');
+    
+    // Custom routes
+    Route::post('templates/{template:slug}/set-default', [TemplateController::class, 'setDefault'])->name('templates.set-default');
+    Route::get('templates/{template:slug}/preview', [TemplateController::class, 'preview'])->name('templates.preview');
+    Route::get('templates/{template:slug}/preview-iframe', [TemplateController::class, 'previewIframe'])->name('templates.preview-iframe');
+    Route::get('templates/{template:slug}/download', [TemplateController::class, 'download'])->name('templates.download');
 
     Route::resource('invitations', InvitationController::class);
+    Route::put('invitations/{invitation}/publish', [InvitationController::class, 'publish'])->name('invitations.publish');
+    Route::put('invitations/{invitation}/unpublish', [InvitationController::class, 'unpublish'])->name('invitations.unpublish');
     Route::post('invitations/{invitation}/duplicate', [InvitationController::class, 'duplicate'])->name('invitations.duplicate');
     Route::get('invitations/{invitation}/customize-template', [InvitationController::class, 'customizeTemplate'])->name('invitations.customize-template');
     Route::put('invitations/{invitation}/update-template-settings', [InvitationController::class, 'updateTemplateSettings'])->name('invitations.update-template-settings');
-    
+
     // Guest management routes
     Route::prefix('invitations/{invitation}/guests')->name('invitations.guests.')->group(function () {
         Route::get('/', [GuestController::class, 'index'])->name('index');

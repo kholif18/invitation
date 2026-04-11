@@ -21,7 +21,7 @@
                             <img src="{{ asset('storage/' . $invitation->groom_photo) }}" alt="{{ $invitation->groom_full_name }}">
                         @elseif(isset($isPreview) && $isPreview)
                             {{-- Preview mode: tampilkan gambar dummy dari assets template --}}
-                            <img src="{{ asset('assets/templates/classic-elegant/images/dummy/groom-placeholder.jpg') }}" alt="Groom Preview">
+                            <img src="{{ asset('assets/templates/classic-elegant/images/groom-placeholder.jpg') }}" alt="Groom Preview">
                         @else
                             <div class="placeholder-image">
                                 <i class="fas fa-user-circle fa-5x"></i>
@@ -53,7 +53,7 @@
                             <img src="{{ asset('storage/' . $invitation->bride_photo) }}" alt="{{ $invitation->bride_full_name }}">
                         @elseif(isset($isPreview) && $isPreview)
                             {{-- Preview mode: tampilkan gambar dummy dari assets template --}}
-                            <img src="{{ asset('assets/templates/classic-elegant/images/dummy/bride-placeholder.jpg') }}" alt="Bride Preview">
+                            <img src="{{ asset('assets/templates/classic-elegant/images/bride-placeholder.jpg') }}" alt="Bride Preview">
                         @else
                             <div class="placeholder-image">
                                 <i class="fas fa-user-circle fa-5x"></i>

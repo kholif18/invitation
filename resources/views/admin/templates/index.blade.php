@@ -27,7 +27,11 @@
             <div class="col-xl-3 col-md-4 col-sm-6">
                 <div class="card h-100">
                     <div class="position-relative">
-                        <img src="{{ $template->thumbnail_url }}" class="card-img-top" alt="{{ $template->name }}" style="height: 200px; object-fit: cover;">
+                        <img src="{{ $template->thumbnail_url }}" 
+                            class="card-img-top" 
+                            alt="{{ $template->name }}" 
+                            style="height: 200px; object-fit: cover;"
+                            onerror="this.onerror=null; this.src='https://placehold.co/600x400/F0F0F0/999999?text={{ urlencode($template->name) }}';">
                         <div class="position-absolute top-0 end-0 m-2">
                             @if($template->is_default)
                                 <span class="badge badge-primary">Default</span>
@@ -48,19 +52,19 @@
                         
                         <div class="mt-3">
                             <div class="btn-group w-100">
-                                <a href="{{ route('admin.templates.preview', $template) }}" class="btn btn-sm btn-light" target="_blank">
+                                <a href="{{ route('admin.templates.preview', $template->slug) }}" class="btn btn-sm btn-light" target="_blank">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="{{ route('admin.templates.edit', $template) }}" class="btn btn-sm btn-light">
+                                <a href="{{ route('admin.templates.edit', $template->slug) }}" class="btn btn-sm btn-light">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 @if(!$template->is_default)
-                                <button type="button" class="btn btn-sm btn-light set-default" data-url="{{ route('admin.templates.set-default', $template) }}">
+                                <button type="button" class="btn btn-sm btn-light set-default" data-url="{{ route('admin.templates.set-default', $template->slug) }}">
                                     <i class="bi bi-star"></i>
                                 </button>
                                 @endif
                                 @if($template->invitations()->count() === 0)
-                                <button type="button" class="btn btn-sm btn-light-danger delete-template" data-url="{{ route('admin.templates.destroy', $template) }}">
+                                <button type="button" class="btn btn-sm btn-light-danger delete-template" data-url="{{ route('admin.templates.destroy', $template->slug) }}">
                                     <i class="bi bi-trash"></i>
                                 </button>
                                 @endif
